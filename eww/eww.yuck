@@ -112,6 +112,7 @@
 (defvar media_ctrls false)
 (defvar volume 0)
 (defvar lyrics-hov false)
+(defvar lyrics-lock false)
 (deflisten lyrics-content
   "sptlrx pipe"
 )
@@ -137,7 +138,7 @@
           :space-evenly false
         "${playing-rs}"
         (revealer
-            :reveal media_ctrls
+            :reveal {media_ctrls || lyrics-lock}
             :transition "slideleft"
           (box
               :space-evenly false
@@ -149,11 +150,12 @@
             (eventbox
                 :onhover "${EWW_CMD} update lyrics-hov=true"
                 :onhoverlost "${EWW_CMD} update lyrics-hov=false"
+                :onclick "${EWW_CMD} update lyrics-lock=${lyrics-lock ? "false" : "true"}"
               (box
                   :space-evenly false
-                (label :text "󰦨" :class "lyrics-button")
+                (label :text "${lyrics-lock ? "󰈚" : "󰧭"}" :class "lyrics-button")
                 (revealer
-                    :reveal lyrics-hov
+                    :reveal {lyrics-hov || lyrics-lock}
                     :transition "slideleft"
                   lyrics-content
                 )
