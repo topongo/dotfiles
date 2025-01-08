@@ -1,0 +1,38 @@
+(defvar settings
+'
+{
+  "network": {
+    "interfaces": [
+      {"link": "enp42s0", "type": "ethernet"}
+    ],
+    "monitor": 0
+  },
+  "battery": false
+}
+'
+)
+
+(defwidget host []
+  (centerbox 
+    (workspaces)
+    (box 
+        :class "center"
+        :space-evenly false
+        :halign "center"
+        :spacing 6
+      (resources)
+      (clock)
+      (media)
+    )
+    (box
+        :space-evenly false
+        :halign "end"
+      (audio)
+      (systray
+          :class "systray"
+          :prepend-new true
+          :icon-size 20
+      )
+    )
+  )
+)

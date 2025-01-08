@@ -1,3 +1,5 @@
+(include "host.yuck")
+
 (defwindow mainbar [] 
     :monitor 0
     :geometry (geometry
@@ -13,45 +15,52 @@
     :windowtype "dock"
     :wm-ignore false
     :class "mainbar"
-  (centerbox 
-    (workspaces)
-    (box 
-        :class "center"
-        :space-evenly false
-        :halign "center"
-        :spacing 6
-      (resources)
-      (clock)
-      (media)
-    )
+  (host)
+)
+
+(defpoll host-specific
+    :interval "1000h"
+    :initial ""
+  `cat $EWW_CONF/$HOSTNAME.host.yuck`
+)
+
+(deflisten dyn_workspaces
+    :initial "[]"
+  "sh $EWW_CONF/scripts/workspaces.sh"
+)
+
+(defwidget workspaces []
+  (eventbox
+      :onscroll "hyprctl dispatch workspace m$([ \"{}\" = \"up\" ] && echo +1 || echo -1)"
     (box
-        :space-evenly false
-        :halign "end"
-      (audio)
-      (systray
-          :class "systray"
-          :prepend-new true
-          :icon-size 20
+        :class "workspaces"
+        :space-evenly true
+        :halign "start"
+      (for entry in dyn_workspaces
+        (workspace-button
+            :selected {entry["selected"]}
+            :index {entry["index"]}
+            :name {entry["name"]}
+        )
       )
     )
   )
 )
 
-
-(deflisten dyn_workspaces
-  "sh scripts/workspaces.sh"
-)
-
-(defwidget workspaces []
-  (literal :content dyn_workspaces)
+(defwidget workspace-button [selected index name]
+  (button 
+      :class "wbutton${selected ? " wselected" : ""}"
+      :onclick "hyprctl dispatch workspace ${index}"
+    name
+  )
 )
 
 (deflisten dyn_sink_volume :initial "100%"
-  "sh scripts/volumectl sink loop"
+  "sh $EWW_CONF/scripts/volumectl sink loop"
 )
 
 (deflisten dyn_source_volume :initial "100%"
-  "sh scripts/volumectl source loop"
+  "sh $EWW_CONF/scripts/volumectl source loop"
 )
 
 (defwidget audio []
@@ -62,10 +71,10 @@
       :spacing 10
     (eventbox 
         :class "audiobox"
-        :onclick "scripts/volumectl sink mute"
-        :onmiddleclick "scripts/volumectl sink cycle"
-        :onrightclick "scripts/volumectl sink menu"
-        :onscroll "scripts/volumectl sink scroll {}"
+        :onclick "$EWW_CONF/scripts/volumectl sink mute"
+        :onmiddleclick "$EWW_CONF/scripts/volumectl sink cycle"
+        :onrightclick "$EWW_CONF/scripts/volumectl sink menu"
+        :onscroll "$EWW_CONF/scripts/volumectl sink scroll {}"
       dyn_sink_volume
     )
     (eventbox 
@@ -127,7 +136,7 @@
   (box
       :class "media"
     (eventbox
-        :onclick "playing-rs op toggle"
+        :onclick "eww get lyrics-hov | grep -q false && playing-rs op toggle"
         :onmiddleclick ""
         :dragvalue playing-rs-url
         :dragtype "text"
@@ -214,8 +223,6 @@
 (defvar net_dn_res_exp false)
 (defvar dis_res_exp false)
 
-(defvar net_sel_link "enp42s0")
-
 (defwidget resources []
   (box
       :class "resources"
@@ -236,7 +243,7 @@
         :icon ""
     )
     (stacked_resource
-        :value {EWW_NET[net_sel_link]["NET_UP"] / 1000}
+        :value {EWW_NET[jq(settings, '.network.interfaces[.network.monitor].link', 'r')]["NET_UP"] / 1000}
         :time-range "30s"
         :index net_up_res_index
         :name "net_up"
@@ -244,7 +251,7 @@
         :icon "󰛶"
     )
     (stacked_resource
-        :value {EWW_NET[net_sel_link]["NET_DOWN"] / 1000}
+        :value {EWW_NET[jq(settings, '.network.interfaces[.network.monitor].link', "r")].NET_DOWN / 1000}
         :time-range "30s"
         :index net_dn_res_index
         :name "net_dn"
