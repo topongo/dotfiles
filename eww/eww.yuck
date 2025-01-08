@@ -18,15 +18,9 @@
   (host)
 )
 
-(defpoll host-specific
-    :interval "1000h"
-    :initial ""
-  `cat $EWW_CONF/$HOSTNAME.host.yuck`
-)
-
 (deflisten dyn_workspaces
     :initial "[]"
-  "sh $EWW_CONF/scripts/workspaces.sh"
+  "sh scripts/workspaces.sh"
 )
 
 (defwidget workspaces []
@@ -56,11 +50,23 @@
 )
 
 (deflisten dyn_sink_volume :initial "100%"
-  "sh $EWW_CONF/scripts/volumectl sink loop"
+  "sh scripts/volumectl sink loop"
 )
 
 (deflisten dyn_source_volume :initial "100%"
-  "sh $EWW_CONF/scripts/volumectl source loop"
+  "sh scripts/volumectl source loop"
+)
+
+(deflisten dyn_batt_icon
+  "while true; do eww get EWW_BATTERY; sleep 1; done | python scripts/battery_icon.py"
+)
+
+(defwidget battery []
+  (box
+      :halign "center"
+      :class "battery"
+    "${dyn_batt_icon}  ${EWW_BATTERY["BAT0"]["capacity"]}%"
+  )
 )
 
 (defwidget audio []
@@ -71,10 +77,10 @@
       :spacing 10
     (eventbox 
         :class "audiobox"
-        :onclick "$EWW_CONF/scripts/volumectl sink mute"
-        :onmiddleclick "$EWW_CONF/scripts/volumectl sink cycle"
-        :onrightclick "$EWW_CONF/scripts/volumectl sink menu"
-        :onscroll "$EWW_CONF/scripts/volumectl sink scroll {}"
+        :onclick "scripts/volumectl sink mute"
+        :onmiddleclick "scripts/volumectl sink cycle"
+        :onrightclick "scripts/volumectl sink menu"
+        :onscroll "scripts/volumectl sink scroll {}"
       dyn_sink_volume
     )
     (eventbox 
@@ -257,6 +263,51 @@
         :name "net_dn"
         :unit "K"
         :icon "󰛴"
+    )
+  )
+)
+
+(defvar wifi_exp false)
+
+(deflisten wifi_icon 
+    :interval "1s"
+    :initial ""
+  "sh scripts/wifi_icon.sh"
+)
+
+(defpoll wifi_ssid
+    :interval "1s"
+    :initial "<Disconnected>"
+  "bash -c 'nmcli -t -f NAME,TYPE,ACTIVE c | grep \"802-11-wireless:yes$\" | cut -d: -f 1 | (o=$(cat); [ -n \"$o\" ] && echo $o || echo \\<No Connection\\>)'"
+)
+
+(defpoll wifi_ip
+    :interval "1s"
+    :initial ""
+  "bash -c 'ip addr show dev $(nmcli -t -f DEVICE,TYPE,ACTIVE c | grep \"802-11-wireless:yes$\" | cut -d: -f 1) | grep -w inet | cut -d\" \" -f 6 | cut -d/ -f 1'"
+)
+
+(defwidget wifi []
+  (eventbox
+      :onmiddleclick "nmcli r wifi $(nmcli r wifi | grep -q enabled && echo off || echo on)"
+      :onhover "${EWW_CMD} update wifi_exp=true"
+      :onhoverlost "${EWW_CMD} update wifi_exp=false"
+    (box 
+        :class "wifi"
+        :space-evenly false
+      (revealer
+          :reveal wifi_exp
+          :duration "300ms"
+          :transition "slideleft"
+          (label
+              :class "wifi_info"
+              :text "${wifi_ssid}${strlength(wifi_ip) != 0 ? ' @ ' + wifi_ip : ''}"
+          )
+        )
+        (label
+            :class "wifi_icon"
+            :text wifi_icon
+        )
     )
   )
 )

@@ -1,0 +1,40 @@
+(defvar settings
+'
+{
+  "network": {
+    "interfaces": [
+      {"link": "wlan0", "type": "ethernet"}
+    ],
+    "monitor": 1
+  },
+  "battery": false
+}
+'
+)
+
+(defwidget host []
+  (centerbox
+    (workspaces)
+    (box
+        :class "center"
+        :space-evenly false
+        :halign "center"
+        :spacing 6
+      (resources)
+      (clock)
+      (media)
+    )
+    (box
+        :space-evenly false
+        :halign "end"
+      (wifi)
+      (battery)
+      (audio)
+      (systray
+          :class "systray"
+          :prepend-new true
+          :icon-size 20
+      )
+    )
+  )
+)

@@ -6,8 +6,11 @@ mpv
 joshuto
 conky
 picom.conf
-hypr
 conky/conkyrc ../.conkyrc
 joshuto
 alacritty
 eww
+hosts/%h.yuck eww/host.yuck r
+hypr
+hosts.idle/%h.conf hypr/host.idle.conf r
+hosts.land/%h.conf hypr/host.land.conf r

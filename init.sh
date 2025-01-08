@@ -15,10 +15,16 @@ if [[ ! -L ~/de ]]; then
 fi
 
 while read l; do
+  l=${l:gs/\%h/$HOSTNAME}
   split=(${(s/ /)l})
+  [ "${split[3]}" = "r" ] && RELATIVE=1 || RELATIVE=0
   if ! [[ -z ${split[2]} ]]; then
     mkdir -p $(basename ${split[2]})
   fi
-  ln -vfs ~/de/${split[1]} ${split[2]}
+  if [[ $RELATIVE -eq 1 ]]; then
+    ln -vfs ${split[1]} ${split[2]}
+  else
+    ln -vfs ~/de/${split[1]} ${split[2]}
+  fi
 done < ~/de/links
 

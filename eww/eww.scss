@@ -80,6 +80,27 @@ slider {
   border-radius: $widget-radius;
 }
 
+.wifi {
+  background-color: rgba($palette-1, $widget-alpha);
+  color: $palette-1;
+  border-radius: $widget-radius;
+  padding: .5em 1em;
+  margin: 0 .5em;
+  min-width: 1em;
+}
+
+.wifi_info {
+  padding-right: .5em;
+}
+
+.battery {
+  background-color: rgba($palette-3, $widget-alpha);
+  color: $palette-3;
+  border-radius: $widget-radius;
+  padding: .5em 1em;
+  margin: 0 .5em;
+}
+
 .audiobox {
   /* background-color: rgba($palette-2, $widget-alpha); */
   /* border-radius: $widget-radius; */
