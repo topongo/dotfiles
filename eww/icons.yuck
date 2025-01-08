@@ -1,0 +1,8 @@
+(defvar icons '{
+  "network": {
+    "ethernet": "󰈀",
+    "wifi": "󰤢",
+    "unknown": "",
+    "wg": "󰌾"
+  }
+}')

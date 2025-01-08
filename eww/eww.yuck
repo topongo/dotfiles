@@ -1,4 +1,5 @@
 (include "host.yuck")
+(include "icons.yuck")
 
 (defwindow mainbar [] 
     :monitor 0
@@ -142,8 +143,6 @@
   (box
       :class "media"
     (eventbox
-        :onclick "eww get lyrics-hov | grep -q false && playing-rs op toggle"
-        :onmiddleclick ""
         :dragvalue playing-rs-url
         :dragtype "text"
         :onhover "${EWW_CMD} update media_ctrls=true"
@@ -151,7 +150,10 @@
         :onscroll "[ \"{}\" = \"up\" ] && playing-rs operation forward 5 || playing-rs operation rewind 5"
       (box
           :space-evenly false
-        "${playing-rs}"
+        (eventbox
+            :onclick "playing-rs op toggle"
+          "${playing-rs}"
+        )
         (revealer
             :reveal {media_ctrls || lyrics-lock}
             :transition "slideleft"
@@ -287,6 +289,47 @@
   "bash -c 'ip addr show dev $(nmcli -t -f DEVICE,TYPE,ACTIVE c | grep \"802-11-wireless:yes$\" | cut -d: -f 1) | grep -w inet | cut -d\" \" -f 6 | cut -d/ -f 1'"
 )
 
+(defvar network-data '{"hover": false}')
+
+(defwidget network-if [if type ?icon]
+  (eventbox
+      :timeout "1000ms"
+      :onhover "echo '${jq(network-data, ".", "r")}' | scripts/net.sh ${if} hover"
+      ;; :onhoverlost "echo '${jq(network-data, ".", "r")}' | scripts/net.sh ${if} unhover"
+    (box 
+        :class "network-if"
+        :space-evenly false
+      (revealer
+          :reveal {network-data.hover == if}
+          :duration "300ms"
+          :transition "slideleft"
+        (label
+            :class "network-info"
+            :text "${type == "wifi" ? "${wifi_ssid} @ " : ""}${network-data.ifs ?.[if] ?: '<No IP>'}"
+        )
+      )
+      (label
+        :class "icon"
+        :text "${icon ?: (icons.network[type] ?: icons.network.unknown)}"
+      )
+    )
+  )
+)
+
+(defwidget network []
+  (eventbox
+      :timeout "1000ms"
+      :onhoverlost "echo '${jq(network-data, ".", "r")}' | scripts/net.sh '' unhover"
+    (box
+        :class "network"
+        :space-evenly false
+      (for if in {settings.network.interfaces}
+        (network-if :if {if.link} :type {if.type} :icon {if.type == "wifi" ? wifi_icon : ""})
+      )
+    )
+  )
+)
+
 (defwidget wifi []
   (eventbox
       :onmiddleclick "nmcli r wifi $(nmcli r wifi | grep -q enabled && echo off || echo on)"
@@ -299,15 +342,15 @@
           :reveal wifi_exp
           :duration "300ms"
           :transition "slideleft"
-          (label
-              :class "wifi_info"
-              :text "${wifi_ssid}${strlength(wifi_ip) != 0 ? ' @ ' + wifi_ip : ''}"
-          )
-        )
         (label
-            :class "wifi_icon"
-            :text wifi_icon
+            :class "wifi_info"
+            :text "${wifi_ssid}${strlength(wifi_ip) != 0 ? ' @ ' + wifi_ip : ''}"
         )
+      )
+      (label
+          :class "wifi_icon"
+          :text wifi_icon
+      )
     )
   )
 )
