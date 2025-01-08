@@ -3,11 +3,11 @@
 {
   "network": {
     "interfaces": [
-      {"link": "enp42s0", "type": "ethernet"}
+      {"link": "enp42s0", "type": "ethernet"},
+      {"link": "prabo.org", "type": "wg"}
     ],
     "monitor": 0
-  },
-  "battery": false
+  }
 }
 '
 )
@@ -27,6 +27,7 @@
     (box
         :space-evenly false
         :halign "end"
+      (network :if "enp42s0")
       (audio)
       (systray
           :class "systray"

@@ -3,11 +3,10 @@
 {
   "network": {
     "interfaces": [
-      {"link": "wlan0", "type": "ethernet"}
+      {"link": "wlan0", "type": "wifi"}
     ],
-    "monitor": 1
-  },
-  "battery": false
+    "monitor": 0
+  }
 }
 '
 )
