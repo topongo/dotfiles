@@ -80,17 +80,23 @@ slider {
   border-radius: $widget-radius;
 }
 
-.wifi {
+.network {
   background-color: rgba($palette-1, $widget-alpha);
   color: $palette-1;
   border-radius: $widget-radius;
-  padding: .5em 1em;
+  padding: .5em .6em;
   margin: 0 .5em;
-  min-width: 1em;
 }
 
-.wifi_info {
-  padding-right: .5em;
+.network-if {
+  padding: 0 .3em;
+  margin: 0 .1em;
+  background-color: rgba($palette-1, $widget-alpha);
+  border-radius: $widget-radius;
+}
+
+.network-info {
+  padding-right: .4em;
 }
 
 .battery {
@@ -132,3 +138,7 @@ slider {
   margin: 0 .5em;
 }
 
+.icon {
+  min-width: 1em;
+  padding-right: .3em;
+}
