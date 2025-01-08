@@ -27,6 +27,8 @@
     (box
         :space-evenly false
         :halign "end"
+      (wifi)
+      (battery)
       (audio)
       (systray
           :class "systray"
@@ -52,6 +54,18 @@
 
 (deflisten dyn_source_volume :initial "100%"
   "sh scripts/volumectl source loop"
+)
+
+(deflisten dyn_batt_icon
+  "while true; do eww get EWW_BATTERY; sleep 1; done | python scripts/battery_icon.py"
+)
+
+(defwidget battery []
+  (box
+      :halign "center"
+      :class "battery"
+    "${dyn_batt_icon}  ${EWW_BATTERY["BAT0"]["capacity"]}%"
+  )
 )
 
 (defwidget audio []
@@ -212,7 +226,7 @@
 (defvar net_dn_res_exp false)
 (defvar dis_res_exp false)
 
-(defvar net_sel_link "enp42s0")
+(defvar net_sel_link "wlan0")
 
 (defwidget resources []
   (box
@@ -248,6 +262,51 @@
         :name "net_dn"
         :unit "K"
         :icon "󰛴"
+    )
+  )
+)
+
+(defvar wifi_exp false)
+
+(deflisten wifi_icon 
+    :interval "1s"
+    :initial ""
+  "sh scripts/wifi_icon.sh"
+)
+
+(defpoll wifi_ssid
+    :interval "1s"
+    :initial "<Disconnected>"
+  "bash -c 'nmcli -t -f NAME,TYPE,ACTIVE c | grep \"802-11-wireless:yes$\" | cut -d: -f 1 | (o=$(cat); [ -n \"$o\" ] && echo $o || echo \\<No Connection\\>)'"
+)
+
+(defpoll wifi_ip
+    :interval "1s"
+    :initial ""
+  "bash -c 'ip addr show dev $(nmcli -t -f DEVICE,TYPE,ACTIVE c | grep \"802-11-wireless:yes$\" | cut -d: -f 1) | grep -w inet | cut -d\" \" -f 6 | cut -d/ -f 1'"
+)
+
+(defwidget wifi []
+  (eventbox
+      :onmiddleclick "nmcli r wifi $(nmcli r wifi | grep -q enabled && echo off || echo on)"
+      :onhover "${EWW_CMD} update wifi_exp=true"
+      :onhoverlost "${EWW_CMD} update wifi_exp=false"
+    (box 
+        :class "wifi"
+        :space-evenly false
+      (revealer
+          :reveal wifi_exp
+          :duration "300ms"
+          :transition "slideleft"
+          (label
+              :class "wifi_info"
+              :text "${wifi_ssid}${strlength(wifi_ip) != 0 ? ' @ ' + wifi_ip : ''}"
+          )
+        )
+        (label
+            :class "wifi_icon"
+            :text wifi_icon
+        )
     )
   )
 )
