@@ -1,0 +1,1 @@
+(box :class "workspaces" :orientation "horizontal" :space-evenly true :halign "start" %s)

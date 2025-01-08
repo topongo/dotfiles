@@ -1,0 +1,1 @@
+(button :class "wbutton%s" :onclick "hyprctl dispatch workspace %d" %d)

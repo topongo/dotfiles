@@ -1,0 +1,36 @@
+
+[font]
+size = 12.0
+
+[font.normal]
+family = "FiraCode Nerd Font Mono"
+
+[window]
+resize_increments = true
+
+[scrolling]
+history = 10000
+
+[keyboard]
+bindings = [
+   { key = "Return", mods = "Control|Shift", action = "SpawnNewInstance" }
+]
+
+[cursor]
+blink_interval = 250
+style = { blinking = "Always" }
+
+[bell]
+color = "#222222"
+duration = 100
+animation = "Ease"
+
+[general]
+import = [
+    "~/.config/alacritty/nord.toml"
+]
+
+#[colors]
+#primary = { foreground = "#ffffff", background = "#000000" }
+#vi_mode_cursor = { cursor = "#888888" } 
+

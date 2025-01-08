@@ -1,0 +1,253 @@
+(defwindow mainbar [] 
+    :monitor 0
+    :geometry (geometry
+        :x "0%"
+        :y "8px"
+        :width "100%"
+        :height "30px"
+        :anchor "top center"
+    )
+    :stacking "fg"
+    :exclusive true
+    :reserve (struts :distance "60px" :side "top")
+    :windowtype "dock"
+    :wm-ignore false
+    :class "mainbar"
+  (centerbox 
+    (workspaces)
+    (box 
+        :class "center"
+        :space-evenly false
+        :halign "center"
+        :spacing 6
+      (resources)
+      (clock)
+      (media)
+    )
+    (box
+        :space-evenly false
+        :halign "end"
+      (audio)
+      (systray
+          :class "systray"
+          :prepend-new true
+          :icon-size 20
+      )
+    )
+  )
+)
+
+
+(deflisten dyn_workspaces
+  "sh scripts/workspaces.sh"
+)
+
+(defwidget workspaces []
+  (literal :content dyn_workspaces)
+)
+
+(deflisten dyn_sink_volume :initial "100%"
+  "sh scripts/volumectl sink loop"
+)
+
+(deflisten dyn_source_volume :initial "100%"
+  "sh scripts/volumectl source loop"
+)
+
+(defwidget audio []
+  (box
+      :class "audio"
+      :space-evenly false
+      :halign "end"
+      :spacing 10
+    (eventbox 
+        :class "audiobox"
+        :onclick "scripts/volumectl sink mute"
+        :onmiddleclick "scripts/volumectl sink cycle"
+        :onrightclick "scripts/volumectl sink menu"
+        :onscroll "scripts/volumectl sink scroll {}"
+      dyn_sink_volume
+    )
+    (eventbox 
+        :class "audiobox"
+        :onclick "scripts/volumectl source mute"
+        :onmiddleclick "scripts/volumectl source cycle"
+        :onrightclick "scripts/volumectl source menu"
+        :onscroll "scripts/volumectl source scroll {}"
+      dyn_source_volume
+    )
+  )
+)
+
+(defpoll timecolor
+    :interval "1s"
+    :initial "black"
+  "echo black; exit; python scripts/timecolor.py"
+)
+
+(defvar clock_hov false)
+
+(defwidget clock []
+  (box :class "clock" (eventbox
+      :onclick "scripts/clock"
+      :halign "center"
+      :onhover "${EWW_CMD} update clock_hov=true"
+      :onhoverlost "${EWW_CMD} update clock_hov=false"
+    {formattime(EWW_TIME, clock_hov ? "%Y/%m/%d %H:%M:%S" : "%m/%d %H:%M")}
+  ))
+)
+
+(defpoll playing-rs
+    :interval "1s"
+    :initial "No media"
+  "playing-rs status --spaces-after-icon 4"
+)
+
+(defpoll playing-rs-url
+    :interval "1s"
+    :initial ""
+  "playing-rs url"
+)
+
+(defvar media_ctrls false)
+(defvar volume 0)
+(defvar lyrics-hov false)
+(deflisten lyrics-content
+  "sptlrx pipe"
+)
+
+(defpoll player-name
+    :interval "1s"
+    :initial ""
+  "playing-rs player"
+)
+
+(defwidget media []
+  (box
+      :class "media"
+    (eventbox
+        :onclick "playing-rs op toggle"
+        :onmiddleclick ""
+        :dragvalue playing-rs-url
+        :dragtype "text"
+        :onhover "${EWW_CMD} update media_ctrls=true"
+        :onhoverlost "${EWW_CMD} update media_ctrls=false"
+        :onscroll "[ \"{}\" = \"up\" ] && playing-rs operation forward 5 || playing-rs operation rewind 5"
+      (box
+          :space-evenly false
+        "${playing-rs}"
+        (revealer
+            :reveal media_ctrls
+            :transition "slideleft"
+          (box
+              :space-evenly false
+              :class "media_ctrls"
+            (button :onclick "playing-rs op toggle" "󰐍")
+            (button :onclick "playing-rs op previous" "󰙤")
+            (button :onclick "playing-rs op next" "󰙢")
+            (button :onclick "${EWW_CMD} update sp-fav=${sp-fav ? "false" : "true"}; playing-rs favorite &" "${player-name == "Spotify" ? (sp-fav ? "󰥱" : "󰥲") : ""}")
+            (eventbox
+                :onhover "${EWW_CMD} update lyrics-hov=true"
+                :onhoverlost "${EWW_CMD} update lyrics-hov=false"
+              (box
+                  :space-evenly false
+                (label :text "󰦨" :class "lyrics-button")
+                (revealer
+                    :reveal lyrics-hov
+                    :transition "slideleft"
+                  lyrics-content
+                )
+              )
+            )
+          )
+        )
+      )
+    ) 
+  )
+)
+
+(defwidget stacked_resource [value time-range index name icon ?unit]
+  (eventbox
+      :onclick "${EWW_CMD} update ${name}_res_index=${(index + 1) % 2}" 
+      :onhover "${EWW_CMD} update ${name}_res_exp=true"
+      :onhoverlost "${EWW_CMD} update ${name}_res_exp=false"
+    (box :space-evenly false
+      (literal :content "(revealer :reveal ${name}_res_exp :duration \"100ms\" :transition \"slideleft\" (label :class \"res_label\" :text \"${icon}\"))")
+      (stack
+          :class "res_box"
+          :transition "slidedown"
+          :selected index
+          :same-size true
+        (label
+            :class "res_metric"
+            :text "${round(value, 0)}${strlength(unit) != 0 ? unit : '%'}"
+        )
+        (graph
+            :class "res_graph"
+            :value value
+            :time-range time-range
+            :min 0
+            :max 100
+        )
+      )
+    )
+  )
+)
+
+(deflisten sp-fav 
+    :initial false
+  "playing-rs favorite --poll --always"
+)
+
+(defvar cpu_res_index 0)
+(defvar mem_res_index 0)
+(defvar net_up_res_index 0)
+(defvar net_dn_res_index 0)
+(defvar dis_res_index 0)
+
+
+(defvar cpu_res_exp false)
+(defvar mem_res_exp false)
+(defvar net_up_res_exp false)
+(defvar net_dn_res_exp false)
+(defvar dis_res_exp false)
+
+(defvar net_sel_link "enp42s0")
+
+(defwidget resources []
+  (box
+      :class "resources"
+      :space-evenly false 
+      :halign "center"
+    (stacked_resource
+        :value {jq(EWW_CPU, ".cores | map(.usage) | add / length")}
+        :time-range "30s"
+        :index cpu_res_index
+        :name "cpu"
+        :icon ""
+    )
+    (stacked_resource
+        :value {EWW_RAM["used_mem"] / EWW_RAM["total_mem"] * 100}
+        :time-range "30s"
+        :index mem_res_index
+        :name "mem"
+        :icon ""
+    )
+    (stacked_resource
+        :value {EWW_NET[net_sel_link]["NET_UP"] / 1000}
+        :time-range "30s"
+        :index net_up_res_index
+        :name "net_up"
+        :unit "K"
+        :icon "󰛶"
+    )
+    (stacked_resource
+        :value {EWW_NET[net_sel_link]["NET_DOWN"] / 1000}
+        :time-range "30s"
+        :index net_dn_res_index
+        :name "net_dn"
+        :unit "K"
+        :icon "󰛴"
+    )
+  )
+)

@@ -1,0 +1,26 @@
+plugin: 
+  inputs:
+    libinput_command_input:
+      enable-tap: true
+      verbose: true
+
+
+swipe:
+  3:
+    left:
+      command: "i3-msg workspace next"
+    right:
+      command: "i3-msg workspace prev"
+  4:
+    right: 
+      command: "playerctl previous"
+    left:
+      command: "playerctl next"
+    up:
+      command: "echo"
+
+
+tap:
+  4:
+    command: "playerctl play-pause"
+

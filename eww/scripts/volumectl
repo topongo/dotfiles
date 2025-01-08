@@ -1,0 +1,122 @@
+#!/bin/zsh
+
+MODE=$1
+ACTION=$2
+ARG=$3
+
+DEFAULT_S="a"
+
+I_SPK="󰕾"
+I_MIC="󰍬"
+I_SPKM="󰖁"
+I_MICM="󰍭"
+I_BLUE="󰂰"
+I_BLUEM="󰂲"
+
+function icon_gen {
+  if [ -z $1 ] || [ -z $2 ]; then
+    echo "Usage: icon_gen <sink|source> <is_muted> <is_bluetooth>"
+    exit 1
+  fi
+  case $1 in
+    sink)
+      if [[ $2 = "yes" ]]; then
+        if [[ $3 = "yes" ]]; then
+          printf $I_BLUEM
+        else
+          printf $I_SPKM
+        fi
+      else
+        if [[ $3 = "yes" ]]; then
+          printf $I_BLUE
+        else
+          printf $I_SPK
+        fi
+      fi
+      ;;
+    source)
+      if [[ $2 = "yes" ]]; then
+        printf $I_MICM
+      else
+        printf $I_MIC
+      fi
+      ;;
+    *)
+      echo "Usage: icon_gen <sink|source> <is_muted> <is_bluetooth>"
+      exit 1
+      ;;
+  esac
+  echo -n "  "
+}
+
+function reload_default {
+  if [[ $MODE = "sink" ]]; then
+    MATCH1="Sink #"
+    MATCH2='s/Sink #([0-9]+)/\1/'
+  else
+    MATCH1="Source #"
+    MATCH2='s/Source #([0-9]+)/\1/'
+  fi
+  DEFAULT_S=$(pactl list ${MODE}s | grep -B 2 "Name: $(pactl get-default-$MODE)" | grep "$MATCH1" | sed -E "$MATCH2")
+  if pactl list ${MODE}s | grep -A 2 \#$DEFAULT_S | grep -q 'bluez'; then
+    is_bluetooth=yes
+  else
+    is_bluetooth=
+  fi
+}
+
+reload_default
+
+case $ACTION in
+  loop)
+    function print_volume {
+      if pactl get-$MODE-mute $DEFAULT_S | grep -q "yes"; then
+        icon_gen $MODE yes $is_bluetooth 
+        echo "Mute"
+        return
+      fi
+      icon_gen $MODE no $is_bluetooth
+      pactl get-$MODE-volume $DEFAULT_S | grep 'Volume: ' | sed -E 's#.* ([0-9]+\%).*#\1#'
+    }
+    print_volume
+    pactl subscribe | grep --line-buffered -iE "$MODE|server" | while read p; do
+      if echo $p | grep -q "'change' on server"; then
+        reload_default
+      fi
+      print_volume 
+    done
+    ;;
+  cycle)
+    nextok=
+    first=
+
+    pactl list ${MODE}s | grep object.serial | sed -E 's/\s+object.serial = "([0-9]+)"/\1/' | while read device; do
+      if [[ -z $first ]]; then
+        first=$device
+      fi
+      if ! [[ -z $nextok ]]; then
+        pactl set-default-$MODE $device
+        exit
+      elif [[ $device = $DEFAULT_S ]]; then
+        nextok=1
+      fi
+    done
+
+    pactl set-default-$MODE $first
+    ;;
+  scroll)
+    if [[ $ARG = "up" ]]; then
+      pactl set-$MODE-volume $DEFAULT_S +2%
+    else
+      pactl set-$MODE-volume $DEFAULT_S -2%
+    fi
+    ;;
+  mute)
+    if pactl get-$MODE-mute $DEFAULT_S | grep -q "yes"; then
+      pactl set-$MODE-mute $DEFAULT_S 0
+    else
+      pactl set-$MODE-mute $DEFAULT_S 1
+    fi
+
+esac
+

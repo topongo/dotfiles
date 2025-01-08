@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# ***This script was made by Clay Gomera (Drake)***
+#  - Description: A simple power menu rofi script
+#  - Dependencies: rofi, power-profiles-daemon
+
+## OPTIONS ##
+option1=" Logout"
+option2=" Reboot"
+option3=" Power off"
+option4="鈴 Suspend"
+option5=" Lock"
+option7=" Cancel"
+
+## OPTIONS ARRAY ##
+options="$option4\n$option2\n$option3\n$option5\n$option1\n$option7"
+
+## MAIN ACTION COMMAND ##
+action=$(echo -e "$options" | LC_ALL="C" rofi -dmenu -no-sort -b -l 6 -i -p " ")
+case "$action" in
+    $option1*)
+         i3-msg exit || qdbus org.kde.Shutdown /Shutdown logout;;
+    $option2*)
+        systemctl reboot || loginctl reboot || qdbus org.kde.Shutdown /Shutdown logoutAndReboot;;
+    $option3*)
+        systemctl poweroff || loginctl poweroff || qdbus org.kde.Shutdown /Shutdown logoutAndShutdown;;
+    $option4*)
+        sudo /usr/lib/bodolock/suspend.sh > /tmp/bodolock.suspend.log || systemctl suspend || qdbus org.kde.Solid.PowerManagement /org/freedesktop/PowerManagement Suspend;;
+    $option5*)
+        sudo /usr/lib/bodolock/bodolock.py || qdbus org.freedesktop.ScreenSaver /ScreenSaver Lock;;
+    $option7*)
+        exit 0
+esac

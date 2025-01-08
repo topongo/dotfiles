@@ -1,0 +1,113 @@
+$palette-1: #78beca;
+$palette-2: #da74a5;
+$palette-3: #7cd2a1;
+$palette-4: #7781cd;
+
+$widget-alpha: .2;
+$widget-radius: .6em;
+
+
+box, button {
+  all: unset;
+}
+
+slider {
+  color: red;
+  background: none;
+  background-color: $palette-1;
+  border-radius: 10px;
+}
+
+.mainbar {
+  background-color: transparent;
+  box-shadow: none;
+  /* font-family: "FiraCode Nerd Font", bold; */
+}
+
+.workspaces {
+  background-color: rgba($palette-1, $widget-alpha);
+  border-radius: $widget-radius;
+  padding: .4em;
+}
+
+.wbutton {
+  padding: 0.1em 0.5em;
+  border-radius: .4em;
+  color: $palette-1;
+}
+
+.wselected {
+  background-color: rgba($palette-1, $widget-alpha);
+}
+
+.resources {
+  background-color: rgba($palette-2, $widget-alpha);
+  color: $palette-2;
+  border-radius: $widget-radius;
+  padding: .4em;
+}
+
+.res_box {
+  background-color: rgba($palette-2, $widget-alpha);
+  border-radius: .4em;
+  margin: .1em;
+}
+
+.res_graph {
+  background-color: transparent;
+}
+
+.res_label {
+  min-width: 2em;
+  font-size: 1.2em;
+}
+
+.res_metric {
+  min-width: 2.5em;
+}
+
+.clock {
+  background-color: rgba($palette-3, $widget-alpha);
+  color: $palette-3;
+  border-radius: $widget-radius;
+  padding: .5em 1em;
+}
+
+.audio {
+  background-color: rgba($palette-4, $widget-alpha);
+  color: $palette-4;
+  padding: .5em .6em;
+  border-radius: $widget-radius;
+}
+
+.audiobox {
+  /* background-color: rgba($palette-2, $widget-alpha); */
+  /* border-radius: $widget-radius; */
+  /* padding: 5em; */
+}
+
+.media {
+  background-color: rgba($palette-1, $widget-alpha);
+  color: $palette-1;
+  border-radius: $widget-radius;
+  padding: .5em 1em;
+  margin: 0 .5em;
+}
+
+.media_ctrls button {
+  min-width: 1.2em;
+}
+
+.lyrics-button {
+  min-width: 1.2em;
+  padding-right: .5em;
+}
+
+.systray {
+  background-color: rgba($palette-2, $widget-alpha);
+  color: $palette-2;
+  border-radius: $widget-radius;
+  padding: .5em 1em;
+  margin: 0 .5em;
+}
+
