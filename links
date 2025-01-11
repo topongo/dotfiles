@@ -12,5 +12,5 @@ alacritty
 eww
 hosts/%h.yuck eww/host.yuck r
 hypr
-hosts.idle/%h.conf hypr/host.idle.conf r
+hosts.idle/%h.conf hypr/hypridle.conf r
 hosts.land/%h.conf hypr/host.land.conf r
