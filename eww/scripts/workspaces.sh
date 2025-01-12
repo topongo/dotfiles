@@ -2,7 +2,7 @@
 
 function draw () {
   ACTIVE=$(hyprctl monitors -j | jq -r '.[0].activeWorkspace.id')
-  hyprctl workspaces -j | jq -rc "map({\"index\": .id, \"name\": .id, \"selected\": ($ACTIVE == .id)})"
+  hyprctl workspaces -j | jq -rc "map({\"index\": .id, \"name\": .id, \"selected\": ($ACTIVE == .id)}) | sort_by(.index)"
 }
 
 draw
