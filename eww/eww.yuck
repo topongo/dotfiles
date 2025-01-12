@@ -139,6 +139,11 @@
   "playing-rs player"
 )
 
+(deflisten sp-fav 
+    :initial false
+  "while true; do playing-rs favorite --poll --always; done"
+)
+
 (defwidget media []
   (box
       :class "media"
@@ -213,10 +218,6 @@
   )
 )
 
-(deflisten sp-fav 
-    :initial false
-  "playing-rs favorite --poll --always"
-)
 
 (defvar cpu_res_index 0)
 (defvar mem_res_index 0)

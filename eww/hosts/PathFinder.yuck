@@ -3,7 +3,8 @@
 {
   "network": {
     "interfaces": [
-      {"link": "wlan0", "type": "wifi"}
+      {"link": "wlan0", "type": "wifi"},
+      {"link": "prabo.org", "type": "wg"}
     ],
     "monitor": 0
   }
@@ -26,7 +27,8 @@
     (box
         :space-evenly false
         :halign "end"
-      (wifi)
+      ;; (wifi)
+      (network)
       (battery)
       (audio)
       (systray
