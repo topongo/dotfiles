@@ -165,7 +165,7 @@
             (button :onclick "playing-rs op toggle" "󰐍")
             (button :onclick "playing-rs op previous" "󰙤")
             (button :onclick "playing-rs op next" "󰙢")
-            (button :onclick "${EWW_CMD} update sp-fav=${sp-fav ? "false" : "true"}; playing-rs favorite &" "${player-name == "Spotify" ? (sp-fav ? "󰥱" : "󰥲") : ""}")
+            (button :onclick "${EWW_CMD} update sp-fav=${sp-fav ? "false" : "true"}; (RES=$(playing-rs favorite); notify-send \"playing-rs\" \"$RES\") &" "${player-name == "Spotify" ? (sp-fav ? "󰥱" : "󰥲") : ""}")
             (eventbox
                 :onhover "${EWW_CMD} update lyrics-hov=true"
                 :onhoverlost "${EWW_CMD} update lyrics-hov=false"
