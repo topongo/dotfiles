@@ -5,60 +5,64 @@ $palette-4: #7781cd;
 
 $widget-alpha: .2;
 $widget-radius: .6em;
+$widget-padding: .25em .3em;
+$widget-nobox-padding: .25em .7em;
+$widget-margin: 0 .4em;
 
+$box-radius: .4em;
+$box-padding: .1em .5em;
 
 box, button {
   all: unset;
 }
 
-slider {
-  color: red;
-  background: none;
-  background-color: $palette-1;
-  border-radius: 10px;
-}
-
 .mainbar {
   background-color: transparent;
   box-shadow: none;
-  /* font-family: "FiraCode Nerd Font", bold; */
+  font-family: "FiraSans";
+}
+
+.widget {
+  border-radius: $widget-radius;
+  padding: $widget-padding;
+  margin: $widget-margin;
+}
+
+.widget-nobox {
+  border-radius: $widget-radius;
+  padding: $widget-nobox-padding;
+  margin: $widget-margin;
+}
+
+.box {
+  padding: $box-padding;
+  border-radius: $box-radius;
+  margin: .10em;
+  color: inherit;
+}
+
+.box-accent {
+  background-color: inherit;
 }
 
 .workspaces {
   background-color: rgba($palette-1, $widget-alpha);
-  border-radius: $widget-radius;
-  padding: .4em;
-}
-
-.wbutton {
-  padding: 0.1em 0.5em;
-  border-radius: .4em;
   color: $palette-1;
 }
 
-.wselected {
-  background-color: rgba($palette-1, $widget-alpha);
-}
+
+
+
 
 .resources {
   background-color: rgba($palette-2, $widget-alpha);
   color: $palette-2;
-  border-radius: $widget-radius;
-  padding: .4em;
-}
-
-.res_box {
-  background-color: rgba($palette-2, $widget-alpha);
-  border-radius: .4em;
-  margin: .1em;
-}
-
-.res_graph {
-  background-color: transparent;
 }
 
 .res_label {
-  min-width: 2em;
+  padding-top: .2em;
+  padding-right: .2em;
+  min-width: 1.5em;
   font-size: 1.2em;
 }
 
@@ -69,42 +73,21 @@ slider {
 .clock {
   background-color: rgba($palette-3, $widget-alpha);
   color: $palette-3;
-  border-radius: $widget-radius;
-  padding: .5em 1em;
 }
 
 .audio {
   background-color: rgba($palette-4, $widget-alpha);
   color: $palette-4;
-  padding: .5em .6em;
-  border-radius: $widget-radius;
 }
 
 .network {
   background-color: rgba($palette-1, $widget-alpha);
   color: $palette-1;
-  border-radius: $widget-radius;
-  padding: .5em .6em;
-  margin: 0 .5em;
-}
-
-.network-if {
-  padding: 0 .3em;
-  margin: 0 .1em;
-  background-color: rgba($palette-1, $widget-alpha);
-  border-radius: $widget-radius;
-}
-
-.network-info {
-  padding-right: .4em;
 }
 
 .battery {
   background-color: rgba($palette-3, $widget-alpha);
   color: $palette-3;
-  border-radius: $widget-radius;
-  padding: .5em 1em;
-  margin: 0 .5em;
 }
 
 .audiobox {
@@ -116,9 +99,6 @@ slider {
 .media {
   background-color: rgba($palette-1, $widget-alpha);
   color: $palette-1;
-  border-radius: $widget-radius;
-  padding: .5em 1em;
-  margin: 0 .5em;
 }
 
 .media_ctrls button {
@@ -133,9 +113,6 @@ slider {
 .systray {
   background-color: rgba($palette-2, $widget-alpha);
   color: $palette-2;
-  border-radius: $widget-radius;
-  padding: .5em 1em;
-  margin: 0 .5em;
 }
 
 .icon {
