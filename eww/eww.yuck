@@ -203,7 +203,21 @@
           :same-size true
         (label
             :class "res_metric"
-            :text "${round(value, 0)}${strlength(unit) != 0 ? unit : '%'}"
+            :text "${
+              unit == "<bytes>" ? round(value / (
+                log(value + 1, 10) >= 9 ? powi(10, 9) :
+                log(value + 1, 10) >= 6 ? powi(10, 6) :
+                log(value + 1, 10) >= 3 ? powi(10, 3) :
+                1
+              ), 1) : round(value, 1)
+            }${
+              unit == "<bytes>" ? (
+                log(value + 1, 10) >= 9 ? "G" :
+                log(value + 1, 10) >= 6 ? "M" :
+                log(value + 1, 10) >= 3 ? "K" :
+                "B"
+              ) : unit ?: "%"
+            }"
         )
         (graph
             :class "res_graph"
@@ -245,26 +259,26 @@
         :icon ""
     )
     (stacked_resource
-        :value {EWW_RAM["used_mem"] / EWW_RAM["total_mem"] * 100}
+        :value {EWW_RAM.used_mem / EWW_RAM.total_mem * 100}
         :time-range "30s"
         :index mem_res_index
         :name "mem"
         :icon ""
     )
     (stacked_resource
-        :value {EWW_NET[jq(settings, '.network.interfaces[.network.monitor].link', 'r')]["NET_UP"] / 1000}
+        :value {EWW_NET[jq(settings, '.network.interfaces[.network.monitor].link', 'r')].NET_UP}
         :time-range "30s"
         :index net_up_res_index
         :name "net_up"
-        :unit "K"
+        :unit "<bytes>"
         :icon "󰛶"
     )
     (stacked_resource
-        :value {EWW_NET[jq(settings, '.network.interfaces[.network.monitor].link', "r")].NET_DOWN / 1000}
+        :value {EWW_NET[jq(settings, '.network.interfaces[.network.monitor].link', "r")].NET_DOWN}
         :time-range "30s"
         :index net_dn_res_index
         :name "net_dn"
-        :unit "K"
+        :unit "<bytes>"
         :icon "󰛴"
     )
   )
