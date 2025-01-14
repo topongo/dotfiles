@@ -287,7 +287,6 @@
 (defvar wifi_exp false)
 
 (deflisten wifi_icon 
-    :interval "1s"
     :initial ""
   "sh scripts/wifi_icon.sh"
 )
@@ -310,7 +309,6 @@
   (eventbox
       :timeout "1000ms"
       :onhover "echo '${jq(network-data, ".", "r")}' | scripts/net.sh ${if} hover"
-      ;; :onhoverlost "echo '${jq(network-data, ".", "r")}' | scripts/net.sh ${if} unhover"
     (box 
         ;; :class "network-if"
         :class "box box-accent network"
@@ -345,27 +343,3 @@
   )
 )
 
-(defwidget wifi []
-  (eventbox
-      :onmiddleclick "nmcli r wifi $(nmcli r wifi | grep -q enabled && echo off || echo on)"
-      :onhover "${EWW_CMD} update wifi_exp=true"
-      :onhoverlost "${EWW_CMD} update wifi_exp=false"
-    (box 
-        :class "wifi"
-        :space-evenly false
-      (revealer
-          :reveal wifi_exp
-          :duration "300ms"
-          :transition "slideleft"
-        (label
-            :class "wifi_info"
-            :text "${wifi_ssid}${strlength(wifi_ip) != 0 ? ' @ ' + wifi_ip : ''}"
-        )
-      )
-      (label
-          :class "wifi_icon"
-          :text wifi_icon
-      )
-    )
-  )
-)
