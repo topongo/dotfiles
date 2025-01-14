@@ -119,3 +119,8 @@ box, button {
   min-width: 1em;
   padding-right: .3em;
 }
+
+.updates {
+  background-color: rgba($palette-2, $widget-alpha);
+  color: $palette-2;
+}

@@ -122,6 +122,12 @@
   "playing-rs url"
 )
 
+(defpoll checkupdates
+    :interval "30m"
+    :initial "0"
+  "checkupdates | wc -l"
+)
+
 (defvar media_ctrls false)
 (defvar volume 0)
 (defvar lyrics-hov false)
@@ -344,3 +350,13 @@
   )
 )
 
+(defwidget updates []
+  (eventbox
+      :onclick "$TERMINAL -e zsh -c 'sudo pacman -Syu' &"
+    (box
+        :class "widget-nobox updates"
+        :style "color: rgb(255, ${255 - checkupdates}, ${255 - checkupdates})"
+      "${checkupdates}"
+    )
+  )
+)

@@ -14,7 +14,11 @@
 
 (defwidget host []
   (centerbox
-    (workspaces)
+    (box
+        :space-evenly false
+      (workspaces)
+      (updates)
+    )
     (box
         :class "center"
         :space-evenly false
