@@ -309,6 +309,7 @@
   (eventbox
       :timeout "1000ms"
       :onhover "echo '${jq(network-data, ".", "r")}' | scripts/net.sh ${if} hover"
+      :onmiddleclick "echo | scripts/net.sh ${if} off"
     (box 
         ;; :class "network-if"
         :class "box box-accent network"

@@ -20,6 +20,9 @@ case $action in
   unhover)
     eww update network-data=$(echo $json | jq -c ".hover = null")
     ;;
+  off)
+    nmcli r wifi $(nmcli r wifi | grep -q enabled && echo off || echo on)
+    ;;
 esac
 
 flock -u /tmp/eww.net.lock
