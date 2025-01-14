@@ -14,12 +14,15 @@
 
 (defwidget host []
   (centerbox
-    (workspaces)
+    (box
+        :space-evenly false
+      (workspaces)
+      (updates)
+    )
     (box
         :class "center"
         :space-evenly false
         :halign "center"
-        :spacing 6
       (resources)
       (clock)
       (media)
@@ -27,12 +30,11 @@
     (box
         :space-evenly false
         :halign "end"
-      ;; (wifi)
       (network)
       (battery)
       (audio)
       (systray
-          :class "systray"
+          :class "systray widget-nobox"
           :prepend-new true
           :icon-size 20
       )

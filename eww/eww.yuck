@@ -28,7 +28,7 @@
   (eventbox
       :onscroll "hyprctl dispatch workspace m$([ \"{}\" = \"up\" ] && echo +1 || echo -1)"
     (box
-        :class "workspaces"
+        :class "workspaces widget"
         :space-evenly true
         :halign "start"
       (for entry in dyn_workspaces
@@ -44,7 +44,7 @@
 
 (defwidget workspace-button [selected index name]
   (button 
-      :class "wbutton${selected ? " wselected" : ""}"
+      :class "box${selected ? " box-accent" : ""}"
       :onclick "hyprctl dispatch workspace ${index}"
     name
   )
@@ -65,32 +65,29 @@
 (defwidget battery []
   (box
       :halign "center"
-      :class "battery"
+      :class "widget-nobox battery"
     "${dyn_batt_icon}  ${EWW_BATTERY["BAT0"]["capacity"]}%"
   )
 )
 
 (defwidget audio []
   (box
-      :class "audio"
+      :class "widget audio"
       :space-evenly false
       :halign "end"
-      :spacing 10
     (eventbox 
-        :class "audiobox"
         :onclick "scripts/volumectl sink mute"
         :onmiddleclick "scripts/volumectl sink cycle"
         :onrightclick "scripts/volumectl sink menu"
         :onscroll "scripts/volumectl sink scroll {}"
-      dyn_sink_volume
+      (box :class "box" dyn_sink_volume)
     )
     (eventbox 
-        :class "audiobox"
         :onclick "scripts/volumectl source mute"
         :onmiddleclick "scripts/volumectl source cycle"
         :onrightclick "scripts/volumectl source menu"
         :onscroll "scripts/volumectl source scroll {}"
-      dyn_source_volume
+      (box :class "box" dyn_source_volume)
     )
   )
 )
@@ -104,7 +101,7 @@
 (defvar clock_hov false)
 
 (defwidget clock []
-  (box :class "clock" (eventbox
+  (box :class "clock widget-nobox" (eventbox
       :onclick "scripts/clock"
       :halign "center"
       :onhover "${EWW_CMD} update clock_hov=true"
@@ -123,6 +120,12 @@
     :interval "1s"
     :initial ""
   "playing-rs url"
+)
+
+(defpoll checkupdates
+    :interval "30m"
+    :initial "0"
+  "checkupdates | wc -l"
 )
 
 (defvar media_ctrls false)
@@ -146,7 +149,7 @@
 
 (defwidget media []
   (box
-      :class "media"
+      :class "media widget-nobox"
     (eventbox
         :dragvalue playing-rs-url
         :dragtype "text"
@@ -168,7 +171,7 @@
             (button :onclick "playing-rs op toggle" "󰐍")
             (button :onclick "playing-rs op previous" "󰙤")
             (button :onclick "playing-rs op next" "󰙢")
-            (button :onclick "${EWW_CMD} update sp-fav=${sp-fav ? "false" : "true"}; playing-rs favorite &" "${player-name == "Spotify" ? (sp-fav ? "󰥱" : "󰥲") : ""}")
+            (button :onclick "${EWW_CMD} update sp-fav=${sp-fav ? "false" : "true"}; (RES=$(playing-rs favorite); notify-send \"playing-rs\" \"$RES\") &" "${player-name == "Spotify" ? (sp-fav ? "󰥱" : "󰥲") : ""}")
             (eventbox
                 :onhover "${EWW_CMD} update lyrics-hov=true"
                 :onhoverlost "${EWW_CMD} update lyrics-hov=false"
@@ -195,19 +198,36 @@
       :onclick "${EWW_CMD} update ${name}_res_index=${(index + 1) % 2}" 
       :onhover "${EWW_CMD} update ${name}_res_exp=true"
       :onhoverlost "${EWW_CMD} update ${name}_res_exp=false"
-    (box :space-evenly false
+    (box
+        :space-evenly false
+        :halign "center"
       (literal :content "(revealer :reveal ${name}_res_exp :duration \"100ms\" :transition \"slideleft\" (label :class \"res_label\" :text \"${icon}\"))")
       (stack
-          :class "res_box"
+          :class "box box-accent resources"
           :transition "slidedown"
           :selected index
           :same-size true
         (label
             :class "res_metric"
-            :text "${round(value, 0)}${strlength(unit) != 0 ? unit : '%'}"
+            :text "${
+              unit == "<bytes>" ? round(value / (
+                log(value + 1, 10) >= 9 ? powi(10, 9) :
+                log(value + 1, 10) >= 6 ? powi(10, 6) :
+                log(value + 1, 10) >= 3 ? powi(10, 3) :
+                1
+              ), 1) : round(value, 1)
+            }${
+              unit == "<bytes>" ? (
+                log(value + 1, 10) >= 9 ? "G" :
+                log(value + 1, 10) >= 6 ? "M" :
+                log(value + 1, 10) >= 3 ? "K" :
+                "B"
+              ) : unit ?: "%"
+            }"
         )
         (graph
             :class "res_graph"
+            :style "background-color: none"
             :value value
             :time-range time-range
             :min 0
@@ -234,7 +254,7 @@
 
 (defwidget resources []
   (box
-      :class "resources"
+      :class "resources widget"
       :space-evenly false 
       :halign "center"
     (stacked_resource
@@ -245,26 +265,26 @@
         :icon ""
     )
     (stacked_resource
-        :value {EWW_RAM["used_mem"] / EWW_RAM["total_mem"] * 100}
+        :value {EWW_RAM.used_mem / EWW_RAM.total_mem * 100}
         :time-range "30s"
         :index mem_res_index
         :name "mem"
         :icon ""
     )
     (stacked_resource
-        :value {EWW_NET[jq(settings, '.network.interfaces[.network.monitor].link', 'r')]["NET_UP"] / 1000}
+        :value {EWW_NET[jq(settings, '.network.interfaces[.network.monitor].link', 'r')].NET_UP}
         :time-range "30s"
         :index net_up_res_index
         :name "net_up"
-        :unit "K"
+        :unit "<bytes>"
         :icon "󰛶"
     )
     (stacked_resource
-        :value {EWW_NET[jq(settings, '.network.interfaces[.network.monitor].link', "r")].NET_DOWN / 1000}
+        :value {EWW_NET[jq(settings, '.network.interfaces[.network.monitor].link', "r")].NET_DOWN}
         :time-range "30s"
         :index net_dn_res_index
         :name "net_dn"
-        :unit "K"
+        :unit "<bytes>"
         :icon "󰛴"
     )
   )
@@ -273,7 +293,6 @@
 (defvar wifi_exp false)
 
 (deflisten wifi_icon 
-    :interval "1s"
     :initial ""
   "sh scripts/wifi_icon.sh"
 )
@@ -296,16 +315,16 @@
   (eventbox
       :timeout "1000ms"
       :onhover "echo '${jq(network-data, ".", "r")}' | scripts/net.sh ${if} hover"
-      ;; :onhoverlost "echo '${jq(network-data, ".", "r")}' | scripts/net.sh ${if} unhover"
+      :onmiddleclick "echo | scripts/net.sh ${if} off"
     (box 
-        :class "network-if"
+        ;; :class "network-if"
+        :class "box box-accent network"
         :space-evenly false
       (revealer
           :reveal {network-data.hover == if}
           :duration "300ms"
           :transition "slideleft"
         (label
-            :class "network-info"
             :text "${type == "wifi" ? "${wifi_ssid} @ " : ""}${network-data.ifs ?.[if] ?: '<No IP>'}"
         )
       )
@@ -322,7 +341,7 @@
       :timeout "1000ms"
       :onhoverlost "echo '${jq(network-data, ".", "r")}' | scripts/net.sh '' unhover"
     (box
-        :class "network"
+        :class "widget network"
         :space-evenly false
       (for if in {settings.network.interfaces}
         (network-if :if {if.link} :type {if.type} :icon {if.type == "wifi" ? wifi_icon : ""})
@@ -331,27 +350,13 @@
   )
 )
 
-(defwidget wifi []
+(defwidget updates []
   (eventbox
-      :onmiddleclick "nmcli r wifi $(nmcli r wifi | grep -q enabled && echo off || echo on)"
-      :onhover "${EWW_CMD} update wifi_exp=true"
-      :onhoverlost "${EWW_CMD} update wifi_exp=false"
-    (box 
-        :class "wifi"
-        :space-evenly false
-      (revealer
-          :reveal wifi_exp
-          :duration "300ms"
-          :transition "slideleft"
-        (label
-            :class "wifi_info"
-            :text "${wifi_ssid}${strlength(wifi_ip) != 0 ? ' @ ' + wifi_ip : ''}"
-        )
-      )
-      (label
-          :class "wifi_icon"
-          :text wifi_icon
-      )
+      :onclick "$TERMINAL -e zsh -c 'sudo pacman -Syu' &"
+    (box
+        :class "widget-nobox updates"
+        :style "color: rgb(255, ${255 - checkupdates}, ${255 - checkupdates})"
+      "${checkupdates}"
     )
   )
 )
