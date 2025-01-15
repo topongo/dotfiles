@@ -58,15 +58,15 @@
   "sh scripts/volumectl source loop"
 )
 
-(deflisten dyn_batt_icon
-  "while true; do eww get EWW_BATTERY; sleep 1; done | python scripts/battery_icon.py"
-)
-
 (defwidget battery []
   (box
       :halign "center"
       :class "widget-nobox battery"
-    "${dyn_batt_icon}  ${EWW_BATTERY["BAT0"]["capacity"]}%"
+    "${
+      icons.battery
+        [EWW_BATTERY["BAT0"].status]
+        [round(EWW_BATTERY["BAT0"].capacity / 10, 0)]
+    }  ${EWW_BATTERY["BAT0"]["capacity"]}%"
   )
 )
 
