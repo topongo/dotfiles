@@ -262,14 +262,14 @@
         :time-range "30s"
         :index cpu_res_index
         :name "cpu"
-        :icon ""
+        :icon "${icons.resources.cpu}"
     )
     (stacked_resource
         :value {EWW_RAM.used_mem / EWW_RAM.total_mem * 100}
         :time-range "30s"
         :index mem_res_index
         :name "mem"
-        :icon ""
+        :icon "${icons.resources.mem}"
     )
     (stacked_resource
         :value {EWW_NET[jq(settings, '.network.interfaces[.network.monitor].link', 'r')].NET_UP}
@@ -277,7 +277,7 @@
         :index net_up_res_index
         :name "net_up"
         :unit "<bytes>"
-        :icon "󰛶"
+        :icon "${icons.resources.net_up}"
     )
     (stacked_resource
         :value {EWW_NET[jq(settings, '.network.interfaces[.network.monitor].link', "r")].NET_DOWN}
@@ -285,7 +285,7 @@
         :index net_dn_res_index
         :name "net_dn"
         :unit "<bytes>"
-        :icon "󰛴"
+        :icon "${icons.resources.net_dn}"
     )
   )
 )
@@ -293,7 +293,7 @@
 (defvar wifi_exp false)
 
 (deflisten wifi_icon 
-    :initial ""
+    :initial "${icons.unk}"
   "sh scripts/wifi_icon.sh"
 )
 
@@ -356,7 +356,7 @@
     (box
         :class "widget-nobox updates"
         :style "color: rgb(255, ${255 - checkupdates}, ${255 - checkupdates})"
-      "${checkupdates}"
+      "${icons.updates}  ${checkupdates}"
     )
   )
 )
