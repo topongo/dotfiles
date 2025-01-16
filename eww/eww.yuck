@@ -293,7 +293,7 @@
 (defvar wifi_exp false)
 
 (deflisten wifi_icon 
-    :initial "${icons.unk}"
+    :initial "?"
   "sh scripts/wifi_icon.sh"
 )
 
