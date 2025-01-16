@@ -144,7 +144,7 @@
 
 (deflisten sp-fav 
     :initial false
-  "while true; do playing-rs favorite --poll --always; done"
+  "while true; do playing-rs favorite --poll --always; sleep 10; done"
 )
 
 (defwidget media []
