@@ -18,6 +18,7 @@
         :space-evenly false
       (workspaces)
       (updates)
+      (suspend-lock)
     )
     (box
         :class "center"

@@ -360,3 +360,19 @@
     )
   )
 )
+
+(defpoll s-lock
+    :interval "1s"
+    :initial "true"
+  "[ -f /tmp/suspend-inhibit ] && echo true || echo false"
+)
+(defwidget suspend-lock []
+  (eventbox
+      :onclick '[ -f /tmp/suspend-inhibit ] && rm /tmp/suspend-inhibit || touch /tmp/suspend-inhibit'
+    (
+      box
+          :class "widget-nobox suspend-lock icon"
+      "${icons.lock[s-lock]} "
+    )
+  )
+)
