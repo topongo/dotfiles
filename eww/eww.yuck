@@ -168,17 +168,17 @@
           (box
               :space-evenly false
               :class "media_ctrls"
-            (button :onclick "playing-rs op toggle" "󰐍")
-            (button :onclick "playing-rs op previous" "󰙤")
-            (button :onclick "playing-rs op next" "󰙢")
-            (button :onclick "${EWW_CMD} update sp-fav=${sp-fav ? "false" : "true"}; (RES=$(playing-rs favorite); notify-send \"playing-rs\" \"$RES\") &" "${player-name == "Spotify" ? (sp-fav ? "󰥱" : "󰥲") : ""}")
+            (button :onclick "playing-rs op toggle" {icons.media.play})
+            (button :onclick "playing-rs op previous" {icons.media.prev})
+            (button :onclick "playing-rs op next" {icons.media.next})
+            (button :onclick "${EWW_CMD} update sp-fav=${!sp-fav}; (RES=$(playing-rs favorite); notify-send \"playing-rs\" \"$RES\") &" "${player-name == "Spotify" ? icons.fav[sp-fav] : ""}")
             (eventbox
                 :onhover "${EWW_CMD} update lyrics-hov=true"
                 :onhoverlost "${EWW_CMD} update lyrics-hov=false"
                 :onclick "${EWW_CMD} update lyrics-lock=${lyrics-lock ? "false" : "true"}"
               (box
                   :space-evenly false
-                (label :text "${lyrics-lock ? "󰈚" : "󰧭"}" :class "lyrics-button")
+                (label :text "${icons.media.lyrics[lyrics-lock]}" :class "lyrics-button")
                 (revealer
                     :reveal {lyrics-hov || lyrics-lock}
                     :transition "slideleft"
@@ -262,14 +262,14 @@
         :time-range "30s"
         :index cpu_res_index
         :name "cpu"
-        :icon "${icons.resources.cpu}"
+        :icon "${icons.res.cpu}"
     )
     (stacked_resource
         :value {EWW_RAM.used_mem / EWW_RAM.total_mem * 100}
         :time-range "30s"
         :index mem_res_index
         :name "mem"
-        :icon "${icons.resources.mem}"
+        :icon "${icons.res.mem}"
     )
     (stacked_resource
         :value {EWW_NET[jq(settings, '.network.interfaces[.network.monitor].link', 'r')].NET_UP}
@@ -277,7 +277,7 @@
         :index net_up_res_index
         :name "net_up"
         :unit "<bytes>"
-        :icon "${icons.resources.net_up}"
+        :icon "${icons.res.net_up}"
     )
     (stacked_resource
         :value {EWW_NET[jq(settings, '.network.interfaces[.network.monitor].link', "r")].NET_DOWN}
@@ -285,7 +285,7 @@
         :index net_dn_res_index
         :name "net_dn"
         :unit "<bytes>"
-        :icon "${icons.resources.net_dn}"
+        :icon "${icons.res.net_dn}"
     )
   )
 )
@@ -330,7 +330,7 @@
       )
       (label
         :class "icon"
-        :text "${icon ?: (icons.network[type] ?: icons.network.unknown)}"
+        :text "${icon ?: (icons.net[type] ?: icons.net.unk)}"
       )
     )
   )
