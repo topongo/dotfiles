@@ -1,0 +1,55 @@
+#!/bin/zsh
+
+function __colors(){
+    case $1 in
+      black) echo 30;;
+      red) echo 31;;
+      green) echo 32;;
+      yellow) echo 33;;
+      blue) echo 34;;
+      magenta) echo 35;;
+      cyan) echo 36;;
+      "light gray") echo 37;;
+      gray) echo 90;;
+      "light red") echo 91;;
+      "light green") echo 92;;
+      "light yellow") echo 93;;
+      "light blue") echo 94;;
+      "light magenta") echo 95;;
+      "light cyan") echo 96;;
+      white) echo 97;;
+    esac
+}
+
+function __colors_b(){
+    case $1 in
+      black) echo 40;;
+      red) echo 41;;
+      green) echo 42;;
+      yellow) echo 43;;
+      blue) echo 44;;
+      magenta) echo 45;;
+      cyan) echo 46;;
+      "light gray") echo 47;;
+      gray) echo 100;;
+      "light red") echo 101;;
+      "light green") echo 102;;
+      "light yellow") echo 103;;
+      "light blue") echo 104;;
+      "light magenta") echo 105;;
+      "light cyan") echo 106;;
+      white) echo 107;;
+    esac
+}
+
+
+
+if [ "$1" = "-b" ]; then
+  echo -ne "\e[$(__colors_b $2)m"
+  echo -n ${@:3}
+  echo -ne "\e[0m"
+else
+  echo -ne "\e[$(__colors $1)m"
+  echo -n ${@:2}
+  echo -ne "\e[0m"
+fi

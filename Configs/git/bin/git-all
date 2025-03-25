@@ -1,0 +1,24 @@
+#!/bin/zsh
+
+GIT_PROJECTS=(. documents/dotfiles data/Games/saveFiles .config/nvim)
+
+if [[ $@[1] = "list-projects" ]]; then
+  for i in $GIT_PROJECTS; do
+    echo $i
+  done
+  exit 0
+fi
+
+if ! git $@[1] --help > /dev/null 2>&1; then
+  colorize red "Invalid command: $@[1]\n"
+  exit 2
+fi
+
+
+for i in $GIT_PROJECTS; do
+  cd ~/$i 2> /dev/null || continue
+  colorize green "=== $i\n"
+  git $@ | grep -v 'Already up to date.'
+  colorize green "=== === ===\n\n"
+done
+

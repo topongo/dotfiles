@@ -1,0 +1,12 @@
+#!/bin/zsh
+
+dest=$1
+
+find | while read p; do
+  if [[ -d $p ]]; then
+    mkdir "$dest/$p"
+  elif [[ -f $p ]]; then
+    touch "$dest/$p"
+  fi
+done  
+

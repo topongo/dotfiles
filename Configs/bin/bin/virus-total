@@ -1,0 +1,10 @@
+#!/bin/zsh
+
+[ -z "$VIRUS_TOTAL_API_KEY" ] && echo "VIRUS_TOTAL_API_KEY is not set" && exit 1
+
+for file in "$@"; do
+  sum=$(md5sum "$file" | awk '{print $1}')
+  echo "=== $file ($sum) ==="
+  curl https://www.virustotal.com/api/v3/files/$sum -H "x-apikey: $VIRUS_TOTAL_API_KEY" -q | jq
+  echo "===              ==="
+done

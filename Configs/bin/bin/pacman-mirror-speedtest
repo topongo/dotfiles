@@ -1,0 +1,26 @@
+#!/bin/zsh
+
+tot=$(cat /etc/pacman.d/mirrorlist.pacnew | grep https | wc -l)
+count=0
+CSV=/tmp/pacman-mirror-speedtest.csv
+package="$1"
+
+[[ -z $package ]] && echo You need to provide a package name! 1>&2 && exit
+
+cat /etc/pacman.d/mirrorlist.pacnew |
+  grep https |
+    sed -E 's/.*(http.*)\/\$repo.*/\1/' |
+      while read p; do
+        echo -en " Progress: ($count/$tot)\r" 1>&2
+        out="$p,$(date +%s.%N),"
+        if curl -L --no-progress-meter --connect-timeout 1 "$p/community/os/x86_64/$1" 2> /dev/null > /dev/null; then
+          echo -n $out
+          date +%s.%N
+        else
+          echo -e "\nTime out: $p" 1>&2
+        fi
+        count=$((count+1))
+      done > /tmp/pacman-mirror-speedtest.csv
+
+
+python -c 'import csv; import json; servers = [(i[0], float(i[2]) - float(i[1])) for i in csv.reader(open("/tmp/pacman-mirror-speedtest.csv"))]; servers.sort(key=lambda l: l[1]); json.dump(servers, open("pacman_servers_tierlist.json", "w+"))'

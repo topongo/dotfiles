@@ -1,0 +1,35 @@
+#!/bin/bash
+
+
+function usage(){
+  echo "auto-doodle shell script for auto subscription to doodle poll"
+  echo "Usage:"
+  echo "  auto-doodle POLL_ID NAME"
+  echo
+  echo "    POLL_ID    in link 'https://doodle.com/poll/r65a8akh76suz84g', the last 16"
+  echo "               characters, all the other junk after '?' must be removed, like"
+  echo "               '?utm_source=poll&utm_medium=link'"
+  echo "    NAME       name (and surname) to send along the poll, if you plan to put use"
+  echo "               spaces then use dquotes: e.g. \"John Doe\""
+  echo
+  echo "WARNING: this script will work with single-option polls and polls without any"
+  echo "         additional data to provide"
+}
+
+[ "$1" = "-h" ] && usage && exit 0
+
+if [ -z "$1" ] || [ -z "$2" ]; then echo Missing argument\(s\); usage; exit 1; fi
+
+OPTIONSHASH=$(curl "https://doodle.com/api/v2.0/polls/$1?adminKey=&participantKey=" --no-progress-meter | jq -r .optionsHash)
+
+DATA_RAW="{\"name\":\"$2\",\"preferences\":[1],\"optionsHash\":\"$OPTIONSHASH\",\"participantKey\":null}"
+
+if curl "https://doodle.com/api/v2.0/polls/$1/participants" \
+  --no-progress-meter \
+  -X POST \
+  -H 'Content-Type: application/json' \
+  --data-raw "{\"name\":\"$2\",\"preferences\":[1],\"optionsHash\":\"$OPTIONSHASH\"}" | jq -r .name | grep "$2" > /dev/null; then
+    echo -e "\e[32mDone\e[0m"
+else
+    echo -e "\e[31mError\e[0m"
+fi

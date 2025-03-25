@@ -1,0 +1,7 @@
+#!/bin/zsh
+
+if [ -f /tmp/suspend-inhibit ]; then
+  exit 0
+else
+  systemctl suspend
+fi

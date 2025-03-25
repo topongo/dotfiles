@@ -1,0 +1,21 @@
+#!/bin/zsh
+
+title=$1
+msg=$2
+category=$3
+
+function b_w() {
+  which $1 > /dev/null 2>&1
+}
+
+if b_w dunstify; then
+  dunstify $1 $2 -t 5000
+elif b_w notify-send; then
+  notify-send $1 $2 -t 5000
+elif b_w termux-notification; then
+  echo $2 | termux-notification --title $1
+else
+  echo
+  colorize red "$1\n"
+  colorize yellow "$2\n"
+fi

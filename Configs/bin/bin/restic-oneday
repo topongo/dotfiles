@@ -1,0 +1,43 @@
+#!/bin/zsh
+
+set -x
+
+LOG=~/.log/restic.err.log
+TODAY=$(date -d 'today 0:00' +%s)
+if [ -f ~/.restic_last ]; then
+  LAST=$(cat ~/.restic_last)
+else
+  LAST=0
+fi
+
+if nmcli -t -f NAME c show --active | grep wireless-ext -q; then
+  echo "not using restic on metered connection"
+  exit 1
+fi
+
+if [ $LAST -eq "$TODAY" ]; then
+  echo "already backed up today"
+  exit 0
+fi
+
+notify-send "Starting restic backup" "Last backup was on $(date -d @$LAST "+%Y-%m-%d %H:%M")"
+cd ~/data
+~/bin/restic-wrapper backup documents --exclude-file ~/.config/restic/exclude 2> $LOG
+
+RESTIC_RETURN=$?
+
+case $RESTIC_RETURN in
+  3)
+    notify-send "Some data didn't got backed up. Check the logs at $LOG"
+    ;;
+  0)
+    NEXT=$((($(date -d 'tomorrow 0:00' +%s) - $(date +%s)) / 60 / 60))
+    ;;
+  *)
+    notify-send "Restic backup failed" "Check the logs at $LOG"
+    exit 1
+    ;;
+esac
+
+notify-send "Restic backup finished!" "Next backup will be in at least $NEXT hours"
+echo $TODAY > ~/.restic_last

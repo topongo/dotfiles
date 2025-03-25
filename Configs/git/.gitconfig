@@ -1,0 +1,15 @@
+[user]
+  email = lorenzo.bodini@prabo.org
+  name = Lorenzo Bodini
+[credential "https://github.com"]
+  helper = !gh auth git-credential
+[init]
+  defaultBranch = master
+[pull]
+  rebase = false
+[core]
+  pager = delta
+[push]
+  autoSetupRemote = true
+[trailer "changeid"]
+  key = Change-Id

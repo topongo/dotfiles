@@ -1,0 +1,13 @@
+#!/bin/zsh
+
+bodoConnect dell -qwle 'ssh -N' &
+BC_PID=$!
+
+trap "kill -SIGTERM $BC_PID; exit" SIGINT
+if [[ -z "$@" ]]; then
+  sleep infinity
+else
+  $@
+fi
+
+kill -SIGTERM $BC_PID

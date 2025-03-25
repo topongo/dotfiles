@@ -1,0 +1,25 @@
+#!/bin/zsh
+
+upds=""
+if ping -c 1 -w 2 prabo.org > /dev/null 2>&1 && [[ $(pwd) = "$HOME" ]]; then
+  git-all list-projects | while read i; do
+    [[ -d ~/$i ]] || continue
+    cd ~/$i
+    if git pull --dry-run -v 2>&1 | grep -v 'POST git-uploaded-pack|From https' | grep '\.\.' > /dev/null; then upds="$upds- $i\n"; fi
+  done
+fi
+
+# cd ~
+# inst=$(python -m bodoConnect --version | sed 's/.*version //' | sed 's/, made.*//')
+# cd ~/documents/python/bodoConnect
+# src=$(python -c 'from bodoConnect import version; print(version)')
+
+if ! [[ $inst = $src ]]; then
+  upds="${upds}- bodoConnect sources are up to date, but installed version is old\n"
+fi
+
+if [[ ! -z $upds ]]; then
+  notify-systemized "Update checker" "Updates available for:\n$upds"
+fi
+
+

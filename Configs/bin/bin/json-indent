@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+import json
+import sys
+
+try:
+    inp = json.load(sys.stdin)
+except json.JSONDecodeError as e:
+    print(f"json-indent: malformed json input: {e}", file=sys.stderr)
+    exit(2)
+
+print(json.dumps(inp, indent=4))

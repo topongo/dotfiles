@@ -1,0 +1,9 @@
+#!/bin/zsh
+
+if ping -c 1 -w 2 prabo.org > /dev/null 2>&1; then
+    git-all pull
+else
+    colorize red "No internet connection available.\n"
+    exit 1
+fi
+

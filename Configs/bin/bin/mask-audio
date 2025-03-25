@@ -1,0 +1,44 @@
+#!/bin/zsh
+
+current_sink=$(pactl info | grep 'Default Sink' | sed 's/.* //')
+if [[ $current_sink != "Dummy" ]]; then
+  echo $current_sink > /tmp/mask-audio.snk
+fi
+
+if [[ $1 = "-u" ]]; then
+  if ! [[ -f /tmp/mask-audio.mod ]]; then
+    echo Not masked. Use \`mask-audio\` to mask.
+  else
+    module_id=$(cat /tmp/mask-audio.mod)
+    if pactl list modules | grep -q $module_id; then
+      pactl unload-module $module_id && rm /tmp/mask-audio.mod
+      echo Unmasked successfully
+    else
+      echo Dummy sink not loaded.
+    fi
+  fi
+  exit 0
+fi
+
+
+load(){
+  module_id=$(pactl load-module module-null-sink sink_name=Dummy)
+  echo $module_id > /tmp/mask-audio.mod
+}
+
+if ! [ -f /tmp/mask-audio.mod ]; then
+  load
+  echo Dummy sink loaded, setting it as default sink.
+else
+  module_id=$(cat /tmp/mask-audio.mod)
+  if pactl list modules | grep -q $module_id; then
+    echo Dummy sink already loaded, setting it as default sink.
+  else
+    load
+  fi
+fi
+
+pactl set-default-sink Dummy
+
+echo "Use \`mask-audio -u\` to unmask."
+

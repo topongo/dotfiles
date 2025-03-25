@@ -1,0 +1,28 @@
+#!/bin/zsh
+
+tot=$(free | grep Mem | awk '{print $2}')
+
+if ! [ -z $1 ]; then
+  if [[ $1 =~ '^[0-9]+$' ]] && [[ $1 -lt 100 ]] then 
+    thresh=$1 
+  else 
+    echo "Not a valid number: $1"
+    exit 1
+  fi
+else
+  thresh=90 
+fi
+
+echo Tot memory: $tot
+
+while true; do
+  line=$(free | grep Mem)
+  avail=$(echo $line | awk '{ print $7 }')
+  perc=$((avail * 100 / tot))
+  if [[ $perc -lt $thresh ]]; then 
+    notify-systemized Memory\ Low\!
+    sleep 5
+  fi 
+  sleep 1
+done
+

@@ -1,0 +1,75 @@
+#!/bin/zsh
+
+output=$1
+duration=$2
+mode=$3
+delay=$4
+fps=$5
+
+function help {
+  echo "Usage: screen-grif OUTPUT [DURATION] [MODE] [DELAY] [FPS]"
+  echo "  OUTPUT     File output, extension can be omitted."
+  echo "  DURATION   Duration of the captured clip"
+  echo "  MODE       Either \"crop\", \"all\" or \"win\", crop will ask for grab"
+  echo "             dimensions, all will record entire screen, win will record the focused window when"
+  echo "             delay ends"
+  echo "  DELAY      Delay to wait before grabbing."
+  echo "  FPS        Frames per second, defaults to 10."
+  echo
+
+  exit
+}
+
+[ -z $output ] && help
+[ -z $duration ] && help
+[ -z $mode ] && mode="crop"
+[ -z $delay ] && delay=5
+[ -z $fps ] && fps=10
+
+if [ -e $output ]; then
+  echo -n "File $output exists, overwrite it? (y/N) "
+  if ! read -q; then
+    exit
+  fi
+  echo
+fi
+
+echo -n "Sleeping for $delay seconds before grabbing... "
+for i in {$delay..0}; do
+  echo -n "$i "
+  sleep 1
+done
+
+case $mode in
+  all)
+    CROP_STRING=""
+    ;;
+  crop)
+    echo "Select screen rectangle"
+    sleep .5
+    import /tmp/screen_grab.png
+    CROP_STRING="crop=$(identify /tmp/screen_grab.png | sed -E 's/.* PNG ([0-9]+)x([0-9]+) .*\+([0-9]+)\+([0-9]+).*/\1:\2:\3:\4/')"
+    ;;
+  win)
+    eval $(xdotool getwindowfocus getwindowgeometry --shell)
+    CROP_STRING="crop=$WIDTH:$HEIGHT:$X:$Y"
+    ;;
+  *)
+    echo "Invalid mode: $mode"
+    help
+    ;;
+esac
+
+echo "Starting grab!"
+
+REC=$(uuidgen).mp4
+
+ffmpeg -t $duration -f x11grab -i :0.0 -y -framerate $fps -filter:v "$CROP_STRING" .$REC
+
+[[ $output == *.gif ]] || output=$output.gif
+
+ffmpeg -i .$REC -framerate $fps -y -vf "fps=$fps,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" $output
+rm .$REC
+
+
+
