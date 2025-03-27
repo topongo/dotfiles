@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-GIT_PROJECTS=(. documents/dotfiles data/Games/saveFiles .config/nvim)
+GIT_PROJECTS=(.config/dotfiles data/Games/saveFiles)
 
 if [[ $@[1] = "list-projects" ]]; then
   for i in $GIT_PROJECTS; do
