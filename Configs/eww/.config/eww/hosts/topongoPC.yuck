@@ -3,7 +3,7 @@
 {
   "network": {
     "interfaces": [
-      {"link": "enp42s0", "type": "ethernet"},
+      {"link": "enp42s0", "type": "eth"},
       {"link": "prabo.org", "type": "wg"}
     ],
     "monitor": 0
