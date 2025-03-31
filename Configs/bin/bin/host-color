@@ -12,13 +12,16 @@ fi
 
 case $HOST in
   topongoPC)
-    echo -n "green"
-    ;;
-  PathFinder)
     echo -n "blue"
     ;;
-  rover)
+  PathFinder)
     echo -n "gray"
+    ;;
+  rover)
+    echo -n "green"
+    ;;
+  voyager)
+    echo -n "orange"
     ;;
   *)
     echo -n "magenta"
