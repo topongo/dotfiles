@@ -8,6 +8,6 @@ cd ~/.config/dotfiles
 
 # Ensure the `private.conf` file exists
 if ! [ -f Configs/hypr/.config/hypr/private.conf ]; then
-  echo "no such file: \`Configs/hypr/.configs/hypr/private.conf\`"
+  echo "no such file: \`Configs/hypr/.config/hypr/private.conf\`"
   exit 1
 fi
