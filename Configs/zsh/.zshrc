@@ -82,6 +82,7 @@ alias cago=cargo
 alias zj=zellij
 alias bdc=bodoConnect
 alias sugo=sudo
+alias this-is-mine-now="sudo chown -R $USER:$USER"
 
 export GOPATH=$HOME/gopath
 export EDITOR=nvim
