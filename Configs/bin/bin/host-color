@@ -21,7 +21,7 @@ case $HOST in
     echo -n "green"
     ;;
   voyager)
-    echo -n "orange"
+    echo -n "yellow"
     ;;
   *)
     echo -n "magenta"
