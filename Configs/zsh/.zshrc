@@ -54,6 +54,7 @@ function fsize(){
   stat --printf=%s $1
 }
 
+export PATH=$GOPATH:$GOPATH/bin:$PATH:$HOME/bin:$HOME/.local/bin:$HOME/.cargo/bin:/opt/riscv/bin
 if is_android; then
   export OMZSH=$HOME/.oh-my-zsh
 fi
@@ -83,7 +84,6 @@ alias bdc=bodoConnect
 alias sugo=sudo
 
 export GOPATH=$HOME/gopath
-export PATH=$GOPATH:$GOPATH/bin:$PATH:$HOME/bin:$HOME/.local/bin:$HOME/.cargo/bin:/opt/riscv/bin
 export EDITOR=nvim
 export NTFY_WARNING=""
 export NTFY_ERROR=""

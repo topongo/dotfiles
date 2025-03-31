@@ -1,0 +1,27 @@
+#!/bin/zsh
+
+if [ "$HOST" = "localhost" ]; then
+  # try to read from /etc/hostname
+  # if on android try $TERMUX__PREFIX/etc/hostname
+  if [ -f $TERMUX__PREFIX/etc/hostname ]; then
+    HOST=$(cat $TERMUX__PREFIX/etc/hostname)
+  elif [ -f /etc/hostname ]; then
+    HOST=$(cat /etc/hostname)
+  fi
+fi
+
+case $HOST in
+  topongoPC)
+    echo -n "green"
+    ;;
+  PathFinder)
+    echo -n "blue"
+    ;;
+  rover)
+    echo -n "gray"
+    ;;
+  *)
+    echo -n "magenta"
+    ;;
+esac
+
