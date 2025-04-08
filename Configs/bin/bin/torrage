@@ -1,0 +1,18 @@
+#!/bin/sh
+
+magnet="$1"
+firefox="$2"
+[ -z "$magnet" ] && exit
+magnet=${magnet/*btih:/}
+magnet=${magnet/\&*/}
+magnet=$(echo $magnet | tr '[:lower:]' '[:upper:]')
+
+echo $magnet
+
+if [ -n "$firefox" ] && [ "$firefox" = "-f" ]; then
+  LINK="https://torrage.info/torrent.php?h=$magnet"
+  echo $LINK
+  firefox -new-tab "$LINK"
+fi
+
+
