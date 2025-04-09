@@ -15,7 +15,7 @@ case $HOST in
     echo -n "blue"
     ;;
   PathFinder)
-    echo -n "gray"
+    echo -n "cyan"
     ;;
   rover)
     echo -n "green"
