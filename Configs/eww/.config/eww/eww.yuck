@@ -251,6 +251,7 @@
 (defvar net_up_res_exp false)
 (defvar net_dn_res_exp false)
 (defvar dis_res_exp false)
+(defvar net_res_sel 0)
 
 (defwidget resources []
   (box
@@ -272,7 +273,7 @@
         :icon "${icons.res.mem}"
     )
     (stacked_resource
-        :value {EWW_NET[jq(settings, '.network.interfaces[.network.monitor].link', 'r')].NET_UP}
+        :value {EWW_NET[settings.network.interfaces[net_res_sel].link].NET_UP}
         :time-range "30s"
         :index net_up_res_index
         :name "net_up"
@@ -280,12 +281,19 @@
         :icon "${icons.res.net_up}"
     )
     (stacked_resource
-        :value {EWW_NET[jq(settings, '.network.interfaces[.network.monitor].link', "r")].NET_DOWN}
+        :value {EWW_NET[settings.network.interfaces[net_res_sel].link].NET_DOWN}
         :time-range "30s"
         :index net_dn_res_index
         :name "net_dn"
         :unit "<bytes>"
         :icon "${icons.res.net_dn}"
+    )
+    (eventbox
+        :onclick "${EWW_CMD} update net_res_sel=${((net_res_sel == -1 ? settings.network.monitor : net_res_sel) + 1) % arraylength(settings.network.interfaces)}" 
+        :class "box box-accent"
+      (label
+          :text "${settings.network.interfaces[net_res_sel].link}"
+      )
     )
   )
 )
@@ -314,7 +322,7 @@
 (defwidget network-if [if type ?icon]
   (eventbox
       :timeout "1000ms"
-      :onhover "echo '${jq(network-data, ".", "r")}' | scripts/net.sh ${if} hover"
+      :onhover "echo '${jq(network-data, ".")}' | scripts/net.sh ${if} hover"
       :onmiddleclick "echo | scripts/net.sh ${if} off"
     (box 
         ;; :class "network-if"
@@ -339,7 +347,7 @@
 (defwidget network []
   (eventbox
       :timeout "1000ms"
-      :onhoverlost "echo '${jq(network-data, ".", "r")}' | scripts/net.sh '' unhover"
+      :onhoverlost "echo '${jq(network-data, ".")}' | scripts/net.sh '' unhover"
     (box
         :class "widget network"
         :space-evenly false
