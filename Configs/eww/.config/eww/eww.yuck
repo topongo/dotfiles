@@ -64,9 +64,9 @@
       :class "widget-nobox battery"
     "${
       icons.battery
-        [EWW_BATTERY["BAT0"].status]
-        [round(EWW_BATTERY["BAT0"].capacity / 10, 0)]
-    }  ${EWW_BATTERY["BAT0"]["capacity"]}%"
+        [EWW_BATTERY.BAT0.status]
+        [round(EWW_BATTERY.BAT0.capacity / 10, 0)]
+    }  ${EWW_BATTERY.BAT0.capacity}%"
   )
 )
 
