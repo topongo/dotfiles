@@ -23,6 +23,7 @@ return {
     filetypes = {
       yaml = false,
       markdown = false,
+      typst = false,
       toml = function() 
         return string.match(vim.api.nvim_buf_get_name(0), "Cargo.toml") ~= nil
       end,
