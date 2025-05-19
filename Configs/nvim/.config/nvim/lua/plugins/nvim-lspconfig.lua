@@ -106,7 +106,7 @@ return {
     end
 
     mason_lspconfig.setup {
-      ensure_installed = { "rust_analyzer", "lua_ls", "clangd" },
+      ensure_installed = { "rust_analyzer", "lua_ls", "clangd", "tinymist" },
     }
   end,
 }
