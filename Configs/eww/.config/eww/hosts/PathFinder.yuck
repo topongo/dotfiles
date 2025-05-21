@@ -4,9 +4,10 @@
   "network": {
     "interfaces": [
       {"link": "wlan0", "type": "wifi"},
-      {"link": "prabo.org", "type": "wg"}
+      {"link": "prabo.org", "type": "wg"},
+      {"link": "enp4s0f3u1u4", "type": "eth"}
     ],
-    "monitor": 0
+    "monitor": 2
   }
 }
 '
