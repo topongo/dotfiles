@@ -35,6 +35,10 @@ map("v", "<Left>", "<Nop>", { noremap = true, silent = true })
 map("v", "<Right>", "<Nop>", { noremap = true, silent = true })
 map("n", "<leader>Ll", "<cmd>Lazy<cr>", { noremap = true, silent = true })
 map("n", "<leader>Lu", "<cmd>Lazy update<cr>", { noremap = true, silent = true })
+map("n", "<leader>Tp", "<cmd>TypstPreview<cr>", { noremap = true, silent = true })
+map("n", "<leader>Tps", "<cmd>TypstPreviewStop<cr>", { noremap = true, silent = true })
+map("v", "Tb", "di**<Esc>P", { noremap = true, silent = true })
+map("v", "Tt", "di``<Esc>P", { noremap = true, silent = true })
 
 -- Setup lazy.nvim
 require("lazy").setup(
