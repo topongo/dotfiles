@@ -1,10 +1,14 @@
 return {
   'mrcjkb/rustaceanvim',
-  version = '^4', -- Recommended
+  version = '^6', -- Recommended
   lazy = false, -- This plugin is already lazy
   ft = { "rust" },
   opts = {
+    ra_multiplex = { enable = true },
     server = {
+      cmd = function()
+        return vim.lsp.rpc.connect("/run/user/1000/ra-mux.sock")
+      end,
       on_attach = function(_, bufnr)
         vim.keymap.set("n", "<leader>cR", function()
           vim.cmd.RustLsp("codeAction")
@@ -12,10 +16,18 @@ return {
         vim.keymap.set("n", "<leader>dr", function()
           vim.cmd.RustLsp("debuggables")
         end, { desc = "Rust Debuggables", buffer = bufnr })
+        vim.keymap.set("n", "<leader>rR", function()
+          vim.cmd.RustLsp("runnables")
+        end, { desc = "Rust Runnables", buffer = bufnr })
       end,
       default_settings = {
         -- rust-analyzer language server configuration
         ["rust-analyzer"] = {
+          lspMux = {
+            version = "1",
+            method = "connect",
+            server = "rust-analyzer",
+          },
           cargo = {
             allFeatures = true,
             loadOutDirsFromCheck = true,
