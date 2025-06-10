@@ -171,7 +171,11 @@
             (button :onclick "playing-rs op toggle" {icons.media.play})
             (button :onclick "playing-rs op previous" {icons.media.prev})
             (button :onclick "playing-rs op next" {icons.media.next})
-            (button :onclick "${EWW_CMD} update sp-fav=${!sp-fav}; (RES=$(playing-rs favorite); notify-send \"playing-rs\" \"$RES\") &" "${player-name == "Spotify" ? icons.fav[sp-fav] : ""}")
+            (button
+                :onclick "${EWW_CMD} update sp-fav=${!sp-fav}; (RES=$(playing-rs favorite); notify-send \"playing-rs\" \"$RES\") &"
+              ;; "${player-name == "Spotify" ? icons.fav[sp-fav] : ""}"
+              "${icons.fav[sp-fav]}"
+            )
             (eventbox
                 :onhover "${EWW_CMD} update lyrics-hov=true"
                 :onhoverlost "${EWW_CMD} update lyrics-hov=false"
