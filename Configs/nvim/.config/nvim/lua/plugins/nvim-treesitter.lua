@@ -43,6 +43,7 @@ return {
         "regex",
         "toml",
         "tsx",
+        "typst",
         "typescript",
         "vim",
         "vimdoc",
