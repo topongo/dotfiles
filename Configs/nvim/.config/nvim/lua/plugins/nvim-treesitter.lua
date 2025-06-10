@@ -18,7 +18,7 @@ return {
     { "<bs>", desc = "Decrement Selection", mode = "x" },
   },
   -- opts_extend = { "ensure_installed" },
-  config = function() 
+  config = function()
     local treesitter = require("nvim-treesitter.configs")
     treesitter.setup({
       highlight = { enable = true },
