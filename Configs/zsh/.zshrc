@@ -102,7 +102,7 @@ fi
 
 # if ! is_android; then
   export LC_ALL="en_US.UTF-8"
- 
+
   if pidof -q ssh-agent; then
     eval "$(keychain --eval --quiet)"
   else
@@ -173,7 +173,7 @@ if is_host topongoPC dell PathFinder raspserver raspserver2; then
   alias sscd="ssc disable"
   alias sscm="ssc mask"
   alias sscum="ssc unmask"
-  
+
   alias usc="systemctl --user"
   alias uscr="usc restart"
   alias uscu="usc status"
