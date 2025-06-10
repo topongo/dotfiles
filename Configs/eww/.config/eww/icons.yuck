@@ -16,7 +16,8 @@
     "cpu": "",
     "mem": "",
     "net_up": "󰛶",
-    "net_dn": "󰛴"
+    "net_dn": "󰛴",
+    "disk": "󰋊"
   },
   "unk": "",
   "fav": {"true": "󰥱", "false": "󰥲"},

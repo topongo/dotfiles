@@ -280,6 +280,14 @@
         :unit "<bytes>"
         :icon "${icons.res.net_dn}"
     )
+    (stacked_resource
+        :value {EWW_DISK["/"].free}
+        :time-range "5m"
+        :index dis_res_index
+        :name "dis"
+        :unit "<bytes>"
+        :icon "${icons.res.disk}"
+    )
     (eventbox
         :onclick "${EWW_CMD} update net_res_sel=${((net_res_sel == -1 ? settings.network.monitor : net_res_sel) + 1) % arraylength(settings.network.interfaces)}"
         :class "box box-accent"
