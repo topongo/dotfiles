@@ -22,9 +22,20 @@
 # The prompt
 
 PROMPT_COLOR="$ZSH_THEME_PROMPT_COLOR"
+PROMPT_BACKG="$ZSH_THEME_PROMPT_BACKG"
 [ -z "$PROMPT_COLOR" ] && PROMPT_COLOR="magenta"
+# intentionally leave blank
 
-PROMPT='%{$fg[$PROMPT_COLOR]%}[%c] %{$reset_color%}'
+[[ $PROMPT_COLOR =~ ^-?[0-9]+$ ]] && \
+  PROMPT_COLOR="%F{$PROMPT_COLOR}" || \
+  PROMPT_COLOR="%{$fg[$PROMPT_COLOR]%}"
+
+[ -n "$PROMPT_BACKG" ] && [[ $PROMPT_BACKG =~ ^-?[0-9]+$ ]] && \
+  PROMPT_BACKG="%K{$PROMPT_BACKG}" || \
+  PROMPT_BACKG="%{$bg[$PROMPT_BACKG]%}"
+
+PROMPT='$PROMPT_COLOR${PROMPT_BACKG}[%c]%{$reset_color%} '
+# PROMPT='$PROMPT_COLOR$PROMPT_BACKG%F{214}[%c] %{$reset_color%}'
 
 # The right-hand prompt
 

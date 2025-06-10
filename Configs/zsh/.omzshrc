@@ -13,6 +13,7 @@ fi
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 [ -z "$ZSH_THEME_PROMPT_COLOR" ] && ZSH_THEME_PROMPT_COLOR="$(host-color || echo "")"
+[ -z "$ZSH_THEME_PROMPT_BACKG" ] && [ -n "$SSH_CONNECTION" ] && ZSH_THEME_PROMPT_BACKG="240"
 ZSH_THEME="topongo"
 
 # Set list of themes to pick from when loading at random
