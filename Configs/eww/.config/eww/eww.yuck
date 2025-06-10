@@ -1,7 +1,7 @@
 (include "host.yuck")
 (include "icons.yuck")
 
-(defwindow mainbar [] 
+(defwindow mainbar []
     :monitor 0
     :geometry (geometry
         :x "0%"
@@ -43,7 +43,7 @@
 )
 
 (defwidget workspace-button [selected index name]
-  (button 
+  (button
       :class "box${selected ? " box-accent" : ""}"
       :onclick "hyprctl dispatch workspace ${index}"
     name
@@ -75,14 +75,14 @@
       :class "widget audio"
       :space-evenly false
       :halign "end"
-    (eventbox 
+    (eventbox
         :onclick "scripts/volumectl sink mute"
         :onmiddleclick "scripts/volumectl sink cycle"
         :onrightclick "scripts/volumectl sink menu"
         :onscroll "scripts/volumectl sink scroll {}"
       (box :class "box" dyn_sink_volume)
     )
-    (eventbox 
+    (eventbox
         :onclick "scripts/volumectl source mute"
         :onmiddleclick "scripts/volumectl source cycle"
         :onrightclick "scripts/volumectl source menu"
@@ -142,7 +142,7 @@
   "playing-rs player"
 )
 
-(deflisten sp-fav 
+(deflisten sp-fav
     :initial false
   "while true; do playing-rs favorite --poll --always; sleep 10; done"
 )
@@ -189,13 +189,13 @@
           )
         )
       )
-    ) 
+    )
   )
 )
 
 (defwidget stacked_resource [value time-range index name icon ?unit]
   (eventbox
-      :onclick "${EWW_CMD} update ${name}_res_index=${(index + 1) % 2}" 
+      :onclick "${EWW_CMD} update ${name}_res_index=${(index + 1) % 2}"
       :onhover "${EWW_CMD} update ${name}_res_exp=true"
       :onhoverlost "${EWW_CMD} update ${name}_res_exp=false"
     (box
@@ -256,7 +256,7 @@
 (defwidget resources []
   (box
       :class "resources widget"
-      :space-evenly false 
+      :space-evenly false
       :halign "center"
     (stacked_resource
         :value {jq(EWW_CPU, ".cores | map(.usage) | add / length")}
@@ -289,7 +289,7 @@
         :icon "${icons.res.net_dn}"
     )
     (eventbox
-        :onclick "${EWW_CMD} update net_res_sel=${((net_res_sel == -1 ? settings.network.monitor : net_res_sel) + 1) % arraylength(settings.network.interfaces)}" 
+        :onclick "${EWW_CMD} update net_res_sel=${((net_res_sel == -1 ? settings.network.monitor : net_res_sel) + 1) % arraylength(settings.network.interfaces)}"
         :class "box box-accent"
       (label
           :text "${settings.network.interfaces[net_res_sel].link}"
@@ -300,7 +300,7 @@
 
 (defvar wifi_exp false)
 
-(deflisten wifi_icon 
+(deflisten wifi_icon
     :initial "?"
   "sh scripts/wifi_icon.sh"
 )
@@ -324,7 +324,7 @@
       :timeout "1000ms"
       :onhover "echo '${jq(network-data, ".")}' | scripts/net.sh ${if} hover"
       :onmiddleclick "echo | scripts/net.sh ${if} off"
-    (box 
+    (box
         ;; :class "network-if"
         :class "box box-accent network"
         :space-evenly false
