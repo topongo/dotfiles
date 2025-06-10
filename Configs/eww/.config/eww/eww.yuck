@@ -214,20 +214,8 @@
         (label
             :class "res_metric"
             :text "${
-              unit == "<bytes>" ? round(value / (
-                log(value + 1, 10) >= 9 ? powi(10, 9) :
-                log(value + 1, 10) >= 6 ? powi(10, 6) :
-                log(value + 1, 10) >= 3 ? powi(10, 3) :
-                1
-              ), 1) : round(value, 1)
-            }${
-              unit == "<bytes>" ? (
-                log(value + 1, 10) >= 9 ? "G" :
-                log(value + 1, 10) >= 6 ? "M" :
-                log(value + 1, 10) >= 3 ? "K" :
-                "B"
-              ) : unit ?: "%"
-            }"
+              unit == "<bytes>" ? formatbytes(round(value, 0), true) : round(value, 1)
+            }${unit == "<bytes>" ? "" : unit ?: "%"}"
         )
         (graph
             :class "res_graph"
