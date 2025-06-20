@@ -13,13 +13,14 @@
 )
 
 (defwidget host []
-  (centerbox 
+  (centerbox
     (box
         :space-evenly false
       (workspaces)
       (updates)
+      (ping)
     )
-    (box 
+    (box
         :class "center"
         :space-evenly false
         :halign "center"

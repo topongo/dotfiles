@@ -384,3 +384,27 @@
     )
   )
 )
+
+(deflisten ping_stream
+    :initial "0"
+  "while true; do
+    ping -i 3 prabo.org |
+      stdbuf -oL grep time= |
+      stdbuf -oL cut -f4 -d'=' |
+      stdbuf -oL cut -d' ' -f1 |
+      while read p; do
+        echo $p | jq --arg date $(date +%s) '{\"ms\": ., \"ts\": $date | tonumber}' -r -c
+      done
+    sleep 5
+  done"
+)
+
+(defwidget ping []
+  (box
+      :class "box widget ping"
+    (label :text "${ping_stream.ms ?: "?"}")
+    (label
+      :style "color: darken(#fff, ${max((EWW_TIME - ping_stream.ts - 3), 0)*10})"
+      :text "")
+  )
+)

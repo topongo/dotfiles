@@ -20,6 +20,7 @@
       (workspaces)
       (updates)
       (suspend-lock)
+      (ping)
     )
     (box
         :class "center"
