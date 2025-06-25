@@ -7,5 +7,4 @@ source $HOME/.config/restic/environment
 [[ -z $RESTIC_PASSWORD_FILE ]] && RESTIC_PASSWORD_FILE=$HOME/.config/restic/password
 
 # repeating setting variable for not exporting
-RESTIC_PASSWORD_FILE=$RESTIC_PASSWORD_FILE restic $@ 
-
+RESTIC_PASSWORD_FILE=$RESTIC_PASSWORD_FILE restic $@
