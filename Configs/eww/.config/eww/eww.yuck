@@ -402,9 +402,9 @@
 (defwidget ping []
   (box
       :class "box widget ping"
-    (label :text "${ping_stream.ms ?: "?"}")
     (label
       :style "color: darken(#fff, ${max((EWW_TIME - ping_stream.ts - 3), 0)*10})"
-      :text "")
+      :text " ")
+    (label :text "${ping_stream.ms ?: "?"}")
   )
 )
