@@ -72,8 +72,6 @@ local cmp = require'cmp'
   -- require('lspconfig')['rust_analyzer'].setup {
   --   capabilities = capabilities
   -- }
-  require("lspconfig")["dartls"].setup {
-    capabilities = capabilities
-  }
+  vim.lsp.config("*", { capabilities = capabilities })
 
 return cmp
