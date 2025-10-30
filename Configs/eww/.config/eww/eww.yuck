@@ -17,6 +17,20 @@
   (host)
 )
 
+(defwindow powerbar []
+    :monitor 0
+    :geometry (geometry
+        :x "2px"
+        :y "5px"
+        :width "30px"
+        :height "90px"
+        :anchor "top left"
+    )
+    :stacking "fg"
+    :class "powerbar"
+  (powermenu)
+)
+
 (deflisten dyn_workspaces
     :initial "[]"
   "sh scripts/workspaces.sh"
@@ -410,3 +424,45 @@
   "[ -f /tmp/suspend-inhibit ] && echo true || echo false"
 )
 
+(defwidget powermenu []
+  (eventbox
+      :onhover "echo 'set powermenu_hover true' | nc -NU $XDG_RUNTIME_DIR/eww.sock"
+      :onhoverlost "echo 'set powermenu_hover false' | nc -NU $XDG_RUNTIME_DIR/eww.sock"
+    (box
+        :orientation "v"
+        :space-evenly true
+        :valign "center"
+      (icon-button :icon "${icons.pwr.sd}" :onclick "shutdown now")
+      (icon-button :icon "${icons.pwr.rb}" :onclick "reboot")
+      (icon-button :icon "${icons.pwr.sp}" :style {s-lock ? "color: gray" : ""} :onclick {!s-lock ? "suspend-inhibited" : "notify-send 'Suspend Inhibited' 'Cannot sleep while suspension is inhibited.'"})
+      (icon-button :icon "${icons.lock[s-lock]}" :onclick "[ -f /tmp/suspend-inhibit ] && rm /tmp/suspend-inhibit || touch /tmp/suspend-inhibit")
+    )
+  )
+)
+
+(deflisten pmenu_open
+    :initial false
+  "echo 'listen $ powerbut_hover or powermenu_hover' | nc -NU $XDG_RUNTIME_DIR/eww.sock | while read line; do
+    if [[ \"\$line\" = \"true\" ]]; then
+      eww open powerbar
+    else
+      eww close powerbar
+    fi
+    echo $line
+  done"
+)
+
+(defwidget powerbutton []
+  (eventbox
+      :onhover "echo 'set powerbut_hover true' | nc -NU $XDG_RUNTIME_DIR/eww.sock"
+      :onhoverlost "echo 'set powerbut_hover false' | nc -NU $XDG_RUNTIME_DIR/eww.sock"
+      ;; :onhover "${EWW_CMD} open powerbar; ${EWW_CMD} update powerbut_hover=true"
+      ;; :onhoverlost "(${EWW_CMD} update powerbut_hover=false; sleep .1; [ \$(${EWW_CMD} get powerbut_hover) = false ] && [ \$(${EWW_CMD} get powermenu_hover) = false ] && ${EWW_CMD} close powerbar) &"
+    (box
+        :space-evenly false
+        :halign "center"
+        :class "powerbutton widget-nobox"
+      (label :text "${icons.pwr.sd}" :style {pmenu_open ? "color: white" : ""})
+    )
+  )
+)

@@ -21,5 +21,10 @@
   },
   "unk": "",
   "fav": {"true": "󰥱", "false": "󰥲"},
-  "media": {"play": "󰐍", "prev": "󰙤", "next": "󰙢", "lyrics": {"true": "󰈚", "false": "󰧭"}}
+  "media": {"play": "󰐍", "prev": "󰙤", "next": "󰙢", "lyrics": {"true": "󰈚", "false": "󰧭"}},
+  "pwr": {
+    "sd": "",
+    "rb": "󰑓",
+    "sp": ""
+  }
 }')

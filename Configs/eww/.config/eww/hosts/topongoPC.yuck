@@ -16,6 +16,7 @@
   (centerbox
     (box
         :space-evenly false
+      (powerbutton)
       (workspaces)
       (updates)
       (ping)
@@ -38,6 +39,6 @@
           :prepend-new true
           :icon-size 20
       )
-    )
+   )
   )
 )
