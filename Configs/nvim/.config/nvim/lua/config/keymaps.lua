@@ -30,8 +30,10 @@ map("v", "<Up>", "<Nop>", { noremap = true, silent = true })
 map("v", "<Down>", "<Nop>", { noremap = true, silent = true })
 map("v", "<Left>", "<Nop>", { noremap = true, silent = true })
 map("v", "<Right>", "<Nop>", { noremap = true, silent = true })
+
 map("n", "<leader>Ll", "<cmd>Lazy<cr>", { noremap = true, silent = true })
 map("n", "<leader>Lu", "<cmd>Lazy update<cr>", { noremap = true, silent = true })
+
 map("i", "jk", "<esc>", { noremap = true, silent = true, desc = "jk to escape" })
 
 map("n", "<leader>cc", "", {noremap = true, silent = true, desc = "Toggle checkbox, add it if not present", callback = function()
