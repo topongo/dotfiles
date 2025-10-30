@@ -13,8 +13,6 @@
     :stacking "fg"
     :exclusive true
     :reserve (struts :distance "60px" :side "top")
-    :windowtype "dock"
-    :wm-ignore false
     :class "mainbar"
   (host)
 )
