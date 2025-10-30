@@ -326,7 +326,7 @@
 (defpoll wifi_ip
     :interval "1s"
     :initial ""
-  "bash -c 'ip addr show dev $(nmcli -t -f DEVICE,TYPE,ACTIVE c | grep \"802-11-wireless:yes$\" | cut -d: -f 1) | grep -w inet | cut -d\" \" -f 6 | cut -d/ -f 1'"
+  "ip addr show dev $(nmcli -t -f DEVICE,TYPE,ACTIVE c | grep \"802-11-wireless:yes$\" | cut -d: -f 1) | grep -w inet | cut -d\" \" -f 6 | cut -d/ -f 1"
 )
 
 (defvar network-data '{"hover": false}')
@@ -388,7 +388,6 @@
 )
 
 (deflisten ping_stream
-    :initial "0"
   "while true; do
     ping -i 3 prabo.org |
       stdbuf -oL grep time= |

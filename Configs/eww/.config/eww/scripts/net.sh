@@ -12,7 +12,7 @@ flock -n /tmp/eww.net.lock -c 'echo -n' || exit 1
 
 case $action in
   hover)
-    addr=$(ip addr show dev $iface | grep -w inet | cut -d" " -f 6 | cut -d/ -f 1) 
+    addr=$(ip addr show dev $iface | grep -w inet | cut -d" " -f 6 | cut -d/ -f 1)
     json=$(echo $json | jq -c ".ifs.\"$iface\" = \"$addr\" | .hover = \"$iface\"")
     # echo $json 1>&2
     eww update network-data=$json
