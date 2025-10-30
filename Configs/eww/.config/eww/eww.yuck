@@ -317,17 +317,23 @@
 
 (defvar network-data '{"hover": false}')
 
+(deflisten net_hover
+    :initial ""
+  "echo 'listen net_hover' | stdbuf -oL nc -NU $XDG_RUNTIME_DIR/eww.sock | stdbuf -oL cut -d\\\" -f 2"
+)
+
 (defwidget network-if [if type ?icon]
   (eventbox
       :timeout "1000ms"
-      :onhover "echo '${jq(network-data, ".")}' | scripts/net.sh ${if} hover"
+      :onhover "echo 'set net_hover \"${if}\"' | nc -NU $XDG_RUNTIME_DIR/eww.sock"
+      ;; :onhoverlost "echo 'set net_hover ${if}' | nc -NU $XDG_RUNTIME_DIR/eww.sock"
       :onmiddleclick "echo | scripts/net.sh ${if} off"
     (box
         ;; :class "network-if"
         :class "box box-accent network"
         :space-evenly false
       (revealer
-          :reveal {network-data.hover == if}
+          :reveal {net_hover == if}
           :duration "300ms"
           :transition "slideleft"
         (label
@@ -345,7 +351,7 @@
 (defwidget network []
   (eventbox
       :timeout "1000ms"
-      :onhoverlost "echo '${jq(network-data, ".")}' | scripts/net.sh '' unhover"
+      :onhoverlost "echo 'set net_hover null' | nc -NU $XDG_RUNTIME_DIR/eww.sock"
     (box
         :class "widget network"
         :space-evenly false
@@ -367,22 +373,6 @@
   )
 )
 
-(defpoll s-lock
-    :interval "1s"
-    :initial "true"
-  "[ -f /tmp/suspend-inhibit ] && echo true || echo false"
-)
-(defwidget suspend-lock []
-  (eventbox
-      :onclick '[ -f /tmp/suspend-inhibit ] && rm /tmp/suspend-inhibit || touch /tmp/suspend-inhibit'
-    (
-      box
-          :class "widget-nobox suspend-lock icon"
-      "${icons.lock[s-lock]} "
-    )
-  )
-)
-
 (deflisten ping_stream
     :initial "0"
   "while true; do
@@ -399,10 +389,24 @@
 
 (defwidget ping []
   (box
-      :class "box widget ping"
+      :class "box widget-nobox ping"
     (label
       :style "color: darken(#fff, ${max((EWW_TIME - ping_stream.ts - 3), 0)*10})"
       :text " ")
     (label :text "${ping_stream.ms ?: "?"}")
   )
 )
+
+(defwidget icon-button [icon ?onclick ?style]
+  (eventbox
+      :onclick {onclick}
+    (label :text "${icon}" :class "icon" :style {style ?: ""})
+  )
+)
+
+(defpoll s-lock
+    :interval "1s"
+    :initial "true"
+  "[ -f /tmp/suspend-inhibit ] && echo true || echo false"
+)
+
