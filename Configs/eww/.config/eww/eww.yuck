@@ -112,7 +112,7 @@
 
 (deflisten clock_hov
     :initial "false"
-  "echo 'listen clock_hov' | nc -NU /run/user/1000/eww.sock"
+  "buzz send listen clock_hov"
 )
 
 (defwidget clock []
@@ -121,7 +121,9 @@
       :halign "center"
       ;; :onhover "${EWW_CMD} update clock_hov=true"
       ;; :onhoverlost "${EWW_CMD} update clock_hov=false"
-    {formattime(EWW_TIME, clock_hov ? "%Y/%m/%d %H:%M:%S" : "%m/%d %H:%M")}
+      :onhover "buzz send set clock_hov true"
+      :onhoverlost "buzz send set clock_hov false"
+    {formattime(EWW_TIME, clock_hov == true ? "%Y/%m/%d %H:%M:%S" : "%m/%d %H:%M")}
   ))
 )
 
@@ -336,14 +338,14 @@
 
 (deflisten net_hover
     :initial ""
-  "echo 'listen net_hover' | stdbuf -oL nc -NU $XDG_RUNTIME_DIR/eww.sock | stdbuf -oL cut -d\\\" -f 2"
+  "buzz send listen net_hover | stdbuf -oL cut -d\\\" -f 2"
 )
 
 (defwidget network-if [if type ?icon]
   (eventbox
       :timeout "1000ms"
-      :onhover "echo 'set net_hover \"${if}\"' | nc -NU $XDG_RUNTIME_DIR/eww.sock"
-      ;; :onhoverlost "echo 'set net_hover ${if}' | nc -NU $XDG_RUNTIME_DIR/eww.sock"
+      :onhover "buzz send set net_hover '\"${if}\"'"
+      ;; :onhoverlost "buzz send set net_hover ${if}"
       :onmiddleclick "echo | scripts/net.sh ${if} off"
     (box
         ;; :class "network-if"
@@ -368,7 +370,7 @@
 (defwidget network []
   (eventbox
       :timeout "1000ms"
-      :onhoverlost "echo 'set net_hover null' | nc -NU $XDG_RUNTIME_DIR/eww.sock"
+      :onhoverlost "buzz send set net_hover null"
     (box
         :class "widget network"
         :space-evenly false
@@ -428,8 +430,8 @@
 
 (defwidget powermenu []
   (eventbox
-      :onhover "echo 'set powermenu_hover true' | nc -NU $XDG_RUNTIME_DIR/eww.sock"
-      :onhoverlost "echo 'set powermenu_hover false' | nc -NU $XDG_RUNTIME_DIR/eww.sock"
+      :onhover "buzz send set powermenu_hover true"
+      :onhoverlost "buzz send set powermenu_hover false"
     (box
         :orientation "v"
         :space-evenly true
@@ -444,7 +446,7 @@
 
 (deflisten pmenu_open
     :initial false
-  "echo 'listen $ powerbut_hover or powermenu_hover' | nc -NU $XDG_RUNTIME_DIR/eww.sock | while read line; do
+  "buzz send listen $ powerbut_hover or powermenu_hover | while read line; do
     if [[ \"\$line\" = \"true\" ]]; then
       eww open powerbar
     else
@@ -456,15 +458,15 @@
 
 (defwidget powerbutton []
   (eventbox
-      :onhover "echo 'set powerbut_hover true' | nc -NU $XDG_RUNTIME_DIR/eww.sock"
-      :onhoverlost "echo 'set powerbut_hover false' | nc -NU $XDG_RUNTIME_DIR/eww.sock"
+      :onhover "buzz send set powerbut_hover true"
+      :onhoverlost "buzz send set powerbut_hover false"
       ;; :onhover "${EWW_CMD} open powerbar; ${EWW_CMD} update powerbut_hover=true"
       ;; :onhoverlost "(${EWW_CMD} update powerbut_hover=false; sleep .1; [ \$(${EWW_CMD} get powerbut_hover) = false ] && [ \$(${EWW_CMD} get powermenu_hover) = false ] && ${EWW_CMD} close powerbar) &"
     (box
         :space-evenly false
         :halign "center"
         :class "powerbutton widget-nobox"
-      (label :text "${icons.pwr.sd}" :style {pmenu_open ? "color: white" : ""})
+      (label :text "${icons.pwr.sd}" :style {pmenu_open == true ? "color: white" : ""})
     )
   )
 )
