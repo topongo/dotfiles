@@ -110,14 +110,17 @@
   "echo black; exit; python scripts/timecolor.py"
 )
 
-(defvar clock_hov false)
+(deflisten clock_hov
+    :initial "false"
+  "echo 'listen clock_hov' | nc -NU /run/user/1000/eww.sock"
+)
 
 (defwidget clock []
   (box :class "clock widget-nobox" (eventbox
       :onclick "scripts/clock"
       :halign "center"
-      :onhover "${EWW_CMD} update clock_hov=true"
-      :onhoverlost "${EWW_CMD} update clock_hov=false"
+      ;; :onhover "${EWW_CMD} update clock_hov=true"
+      ;; :onhoverlost "${EWW_CMD} update clock_hov=false"
     {formattime(EWW_TIME, clock_hov ? "%Y/%m/%d %H:%M:%S" : "%m/%d %H:%M")}
   ))
 )
