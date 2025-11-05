@@ -1,0 +1,8 @@
+[Unit]
+
+[Service]
+Environment="RUST_LOG=info"
+ExecStart=/usr/bin/bash -c 'exec $HOME/.cargo/bin/buzz listen'
+
+[Install]
+WantedBy=default.target
