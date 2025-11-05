@@ -90,14 +90,14 @@
     (eventbox
         :onclick "scripts/volumectl sink mute"
         :onmiddleclick "scripts/volumectl sink cycle"
-        :onrightclick "scripts/volumectl sink menu"
+        :onrightclick "$TERMINAL -e wiremix &"
         :onscroll "scripts/volumectl sink scroll {}"
       (box :class "box" dyn_sink_volume)
     )
     (eventbox
         :onclick "scripts/volumectl source mute"
         :onmiddleclick "scripts/volumectl source cycle"
-        :onrightclick "scripts/volumectl source menu"
+        :onrightclick "$TERMINAL -e wiremix &"
         :onscroll "scripts/volumectl source scroll {}"
       (box :class "box" dyn_source_volume)
     )
