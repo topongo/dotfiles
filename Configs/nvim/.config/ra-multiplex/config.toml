@@ -1,0 +1,4 @@
+# listen = "/run/user/1000/ra-mux.sock" # unix socket
+# connect = "/run/user/1000/ra-mux.sock" # same as `listen`
+listen = ["127.0.0.1", 27631]
+connect = ["127.0.0.1", 27631]
