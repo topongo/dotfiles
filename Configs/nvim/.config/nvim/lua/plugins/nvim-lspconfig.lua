@@ -14,7 +14,6 @@ return {
   },
   opts = {
     servers = {
-      rust_analyzer = {},
       basedpyright = {
       },
       taplo = {
