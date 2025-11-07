@@ -20,3 +20,6 @@ map("v", "<Right>", "<Nop>", { noremap = true, silent = true })
 map("n", "<leader>Ll", "<cmd>Lazy<cr>", { noremap = true, silent = true })
 map("n", "<leader>Lu", "<cmd>Lazy update<cr>", { noremap = true, silent = true })
 map("i", "jk", "<esc>", { noremap = true, silent = true, desc = "jk to escape" })
+
+map("n", "<leader>bd", "<cmd>bd<cr>", { noremap = true, silent = true, desc = "Close current buffer" })
+map("n", "<leader>be", "<cmd>enew<cr>", { noremap = true, silent = true, desc = "New empty buffer" })
