@@ -106,7 +106,7 @@
       :halign "center"
       :onhover "${EWW_CMD} update clock_hov=true"
       :onhoverlost "${EWW_CMD} update clock_hov=false"
-    {formattime(EWW_TIME, clock_hov ? "%Y/%m/%d %H:%M:%S" : "%m/%d %H:%M")}
+    {formattime(EWW_TIME, clock_hov ? "%Y/%m/%d %H:%M:%S" : "%a %d %H:%M")}
   ))
 )
 
