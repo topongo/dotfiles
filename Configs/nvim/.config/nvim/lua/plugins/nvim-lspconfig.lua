@@ -16,6 +16,13 @@ return {
     servers = {
       rust_analyzer = {},
       basedpyright = {},
+      ltex = {
+        settings = {
+          ltex = {
+            filetypes = { "markdown", "typ" },
+          }
+        }
+      }
     },
   },
   config = function()
@@ -89,8 +96,16 @@ return {
       vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
     end
 
+    require('lspconfig').ltex.setup {
+      on_attach = function()
+        -- ...
+      end,
+      filetypes = { 'markdown', 'text', 'tex', 'gitcommit' },
+      flags = { debounce_text_changes = 300 },
+    }
+
     mason_lspconfig.setup {
-      ensure_installed = { "lua_ls", "clangd", "tinymist" },
+      ensure_installed = { "lua_ls", "clangd", "tinymist", "ltex" },
     }
   end,
 }
