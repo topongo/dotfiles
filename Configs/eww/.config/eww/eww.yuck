@@ -119,11 +119,9 @@
   (box :class "clock widget-nobox" (eventbox
       :onclick "scripts/clock"
       :halign "center"
-      ;; :onhover "${EWW_CMD} update clock_hov=true"
-      ;; :onhoverlost "${EWW_CMD} update clock_hov=false"
       :onhover "buzz send set clock_hov true"
       :onhoverlost "buzz send set clock_hov false"
-    {formattime(EWW_TIME, clock_hov == true ? "%Y/%m/%d %H:%M:%S" : "%m/%d %H:%M")}
+    {formattime(EWW_TIME, clock_hov == true ? "%Y/%m/%d %H:%M:%S" : "%a %d %H:%M")}
   ))
 )
 
@@ -422,14 +420,14 @@
   )
 )
 
-(defpoll s-lock
-    :interval "1s"
-    :initial "true"
-  "[ -f /tmp/suspend-inhibit ] && echo true || echo false"
+(deflisten s-lock
+    :initial "false"
+  "buzz send set s-lock false; buzz send listen s-lock"
 )
 (defwidget suspend-lock []
   (eventbox
-      :onclick '[ -f /tmp/suspend-inhibit ] && rm /tmp/suspend-inhibit || touch /tmp/suspend-inhibit'
+      ;; :onclick '[ -f /tmp/suspend-inhibit ] && rm /tmp/suspend-inhibit || touch /tmp/suspend-inhibit'
+      :onclick "buzz send set s-lock ${!s-lock}"
     (
       box
           :class "widget-nobox suspend-lock icon"

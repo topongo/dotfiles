@@ -17,6 +17,7 @@
   (centerbox
     (box
         :space-evenly false
+      (powerbutton)
       (workspaces)
       (updates)
       (suspend-lock)
