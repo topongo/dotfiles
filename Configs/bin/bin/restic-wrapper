@@ -2,9 +2,22 @@
 
 PATH="$HOME/bin:$PATH"
 
-source $HOME/.config/restic/environment
+if [[ -z $RESTIC_WRAPPER_PROFILE ]]; then
+  if [[ -d $HOME/.config/restic/default ]]; then
+    WRP_HOME="$HOME/.config/restic/default"
+  else
+    echo "WARNING: no default profile found, using root config folder" >&2
+    WRP_HOME="$HOME/.config/restic"
+  fi
+else
+  WRP_HOME="$HOME/.config/restic/$RESTIC_WRAPPER_PROFILE"
+fi
 
-[[ -z $RESTIC_PASSWORD_FILE ]] && RESTIC_PASSWORD_FILE=$HOME/.config/restic/password
+[[ ! -d $WRP_HOME ]] && echo "ERROR: profile '$RESTIC_WRAPPER_PROFILE' not found" >&2 && exit 1
+
+source $WRP_HOME/environment
+
+[[ -z $RESTIC_PASSWORD_FILE ]] && RESTIC_PASSWORD_FILE=$WRP_HOME/password
 
 # repeating setting variable for not exporting
 RESTIC_PASSWORD_FILE=$RESTIC_PASSWORD_FILE restic $@
