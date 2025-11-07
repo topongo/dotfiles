@@ -44,8 +44,9 @@ function use_nvim(){
 
 function rm(){
   if [[ "$@" == *-r* ]]; then
-    echo "Wait 5 seconds before executing \`rm $@\`..."
+    echo "Wait 5 seconds before executing \`rm $@\`..." 1>&2
     sleep 5
+    echo "Proceeding..." 1>&2
   fi
   /usr/bin/rm $@
 }
