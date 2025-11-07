@@ -15,6 +15,11 @@ if nmcli -t -f NAME c show --active | grep wireless-ext -q; then
   exit 1
 fi
 
+if ! ping s3.prabo.org -c 1 -W 5 > /dev/null 2>&1; then
+  notify-send "No connection available to s3.prabo.org, skipping restic backup."
+  exit 1
+fi
+
 if [ $LAST -eq "$TODAY" ]; then
   echo "already backed up today"
   exit 0
