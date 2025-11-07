@@ -27,7 +27,7 @@ fi
 
 notify-send "Starting restic backup" "Last backup was on $(date -d @$LAST "+%Y-%m-%d %H:%M")"
 cd ~/data
-~/bin/restic-wrapper backup documents --exclude-file ~/.config/restic/exclude 2> $LOG
+~/bin/restic-wrapper backup documents --exclude-caches --exclude-file ~/.config/restic/default/exclude 2> $LOG
 
 RESTIC_RETURN=$?
 
