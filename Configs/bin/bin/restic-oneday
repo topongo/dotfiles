@@ -11,7 +11,7 @@ else
 fi
 
 if nmcli -t -f NAME c show --active | grep wireless-ext -q; then
-  echo "not using restic on metered connection"
+  notify-send "Not starting restic backup on metered connection"
   exit 1
 fi
 
