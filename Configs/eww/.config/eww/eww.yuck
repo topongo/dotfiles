@@ -17,6 +17,20 @@
   (host)
 )
 
+(defwindow powerbar []
+    :monitor 0
+    :geometry (geometry
+        :x "2px"
+        :y "0px"
+        :width "30px"
+        :height "90px"
+        :anchor "top left"
+    )
+    :stacking "fg"
+    :class "powerbar"
+  (powermenu)
+)
+
 (deflisten dyn_workspaces
     :initial "[]"
   "sh scripts/workspaces.sh"
@@ -76,14 +90,14 @@
     (eventbox
         :onclick "scripts/volumectl sink mute"
         :onmiddleclick "scripts/volumectl sink cycle"
-        :onrightclick "scripts/volumectl sink menu"
+        :onrightclick "$TERMINAL -e wiremix &"
         :onscroll "scripts/volumectl sink scroll {}"
       (box :class "box" dyn_sink_volume)
     )
     (eventbox
         :onclick "scripts/volumectl source mute"
         :onmiddleclick "scripts/volumectl source cycle"
-        :onrightclick "scripts/volumectl source menu"
+        :onrightclick "$TERMINAL -e wiremix &"
         :onscroll "scripts/volumectl source scroll {}"
       (box :class "box" dyn_source_volume)
     )
@@ -96,15 +110,18 @@
   "echo black; exit; python scripts/timecolor.py"
 )
 
-(defvar clock_hov false)
+(deflisten clock_hov
+    :initial "false"
+  "buzz send listen clock_hov"
+)
 
 (defwidget clock []
   (box :class "clock widget-nobox" (eventbox
       :onclick "scripts/clock"
       :halign "center"
-      :onhover "${EWW_CMD} update clock_hov=true"
-      :onhoverlost "${EWW_CMD} update clock_hov=false"
-    {formattime(EWW_TIME, clock_hov ? "%Y/%m/%d %H:%M:%S" : "%a %d %H:%M")}
+      :onhover "buzz send set clock_hov true"
+      :onhoverlost "buzz send set clock_hov false"
+    {formattime(EWW_TIME, clock_hov == true ? "%Y/%m/%d %H:%M:%S" : "%a %d %H:%M")}
   ))
 )
 
@@ -312,22 +329,28 @@
 (defpoll wifi_ip
     :interval "1s"
     :initial ""
-  "bash -c 'ip addr show dev $(nmcli -t -f DEVICE,TYPE,ACTIVE c | grep \"802-11-wireless:yes$\" | cut -d: -f 1) | grep -w inet | cut -d\" \" -f 6 | cut -d/ -f 1'"
+  "ip addr show dev $(nmcli -t -f DEVICE,TYPE,ACTIVE c | grep \"802-11-wireless:yes$\" | cut -d: -f 1) | grep -w inet | cut -d\" \" -f 6 | cut -d/ -f 1"
 )
 
 (defvar network-data '{"hover": false}')
 
+(deflisten net_hover
+    :initial ""
+  "buzz send listen net_hover | stdbuf -oL cut -d\\\" -f 2"
+)
+
 (defwidget network-if [if type ?icon]
   (eventbox
       :timeout "1000ms"
-      :onhover "echo '${jq(network-data, ".")}' | scripts/net.sh ${if} hover"
+      :onhover "buzz send set net_hover '\"${if}\"'"
+      ;; :onhoverlost "buzz send set net_hover ${if}"
       :onmiddleclick "echo | scripts/net.sh ${if} off"
     (box
         ;; :class "network-if"
         :class "box box-accent network"
         :space-evenly false
       (revealer
-          :reveal {network-data.hover == if}
+          :reveal {net_hover == if}
           :duration "300ms"
           :transition "slideleft"
         (label
@@ -345,7 +368,7 @@
 (defwidget network []
   (eventbox
       :timeout "1000ms"
-      :onhoverlost "echo '${jq(network-data, ".")}' | scripts/net.sh '' unhover"
+      :onhoverlost "buzz send set net_hover null"
     (box
         :class "widget network"
         :space-evenly false
@@ -367,24 +390,7 @@
   )
 )
 
-(defpoll s-lock
-    :interval "1s"
-    :initial "true"
-  "[ -f /tmp/suspend-inhibit ] && echo true || echo false"
-)
-(defwidget suspend-lock []
-  (eventbox
-      :onclick '[ -f /tmp/suspend-inhibit ] && rm /tmp/suspend-inhibit || touch /tmp/suspend-inhibit'
-    (
-      box
-          :class "widget-nobox suspend-lock icon"
-      "${icons.lock[s-lock]} "
-    )
-  )
-)
-
 (deflisten ping_stream
-    :initial "0"
   "while true; do
     ping -i 3 prabo.org |
       stdbuf -oL grep time= |
@@ -399,10 +405,77 @@
 
 (defwidget ping []
   (box
-      :class "box widget ping"
+      :class "box widget-nobox ping"
     (label
       :style "color: darken(#fff, ${max((EWW_TIME - ping_stream.ts - 3), 0)*10})"
       :text " ")
     (label :text "${ping_stream.ms ?: "?"}")
+  )
+)
+
+(defwidget icon-button [icon ?onclick ?style]
+  (eventbox
+      :onclick {onclick}
+    (label :text "${icon}" :class "icon" :style {style ?: ""})
+  )
+)
+
+(deflisten s-lock
+    :initial "false"
+  "buzz send set s-lock false; buzz send listen s-lock"
+)
+(defwidget suspend-lock []
+  (eventbox
+      ;; :onclick '[ -f /tmp/suspend-inhibit ] && rm /tmp/suspend-inhibit || touch /tmp/suspend-inhibit'
+      :onclick "buzz send set s-lock ${!s-lock}"
+    (
+      box
+          :class "widget-nobox suspend-lock icon"
+      "${icons.lock[s-lock]} "
+    )
+  )
+)
+
+
+(defwidget powermenu []
+  (eventbox
+      :onhover "buzz send set powermenu_hover true"
+      :onhoverlost "buzz send set powermenu_hover false"
+    (box
+        :orientation "v"
+        :space-evenly true
+        :valign "center"
+      (icon-button :icon "${icons.pwr.sd}" :onclick "shutdown now")
+      (icon-button :icon "${icons.pwr.rb}" :onclick "reboot")
+      (icon-button :icon "${icons.pwr.sp}" :style {s-lock ? "color: gray" : ""} :onclick {!s-lock ? "suspend-inhibited" : "notify-send 'Suspend Inhibited' 'Cannot sleep while suspension is inhibited.'"})
+      (icon-button :icon "${icons.lock[s-lock]}" :onclick "[ -f /tmp/suspend-inhibit ] && rm /tmp/suspend-inhibit || touch /tmp/suspend-inhibit")
+    )
+  )
+)
+
+(deflisten pmenu_open
+    :initial false
+  "buzz send listen $ powerbut_hover or powermenu_hover | while read line; do
+    if [[ \"\$line\" = \"true\" ]]; then
+      eww open powerbar
+    else
+      eww close powerbar
+    fi
+    echo $line
+  done"
+)
+
+(defwidget powerbutton []
+  (eventbox
+      :onhover "buzz send set powerbut_hover true"
+      :onhoverlost "buzz send set powerbut_hover false"
+      ;; :onhover "${EWW_CMD} open powerbar; ${EWW_CMD} update powerbut_hover=true"
+      ;; :onhoverlost "(${EWW_CMD} update powerbut_hover=false; sleep .1; [ \$(${EWW_CMD} get powerbut_hover) = false ] && [ \$(${EWW_CMD} get powermenu_hover) = false ] && ${EWW_CMD} close powerbar) &"
+    (box
+        :space-evenly false
+        :halign "center"
+        :class "powerbutton widget-nobox"
+      (label :text "${icons.pwr.sd}" :style {pmenu_open == true ? "color: white" : ""})
+    )
   )
 )
