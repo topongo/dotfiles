@@ -60,6 +60,10 @@ function mkdircd(){
   cd "$1"
 }
 
+function kc() {
+  eval "$(keychain --eval --ignore-missing ~/.ssh/id_ed25519)"
+}
+
 export PATH=$GOPATH:$GOPATH/bin:$PATH:$HOME/bin:$HOME/.local/bin:$HOME/.cargo/bin:/opt/riscv/bin
 
 if [ -d /usr/share/oh-my-zsh ]; then
@@ -112,7 +116,7 @@ else
   echo -n "Start keychain service? (y/N) "
   if read -q; then
     echo
-    eval "$(keychain --eval --ignore-missing ~/.ssh/id_ed25519)"
+    kc
   fi
 fi
 
