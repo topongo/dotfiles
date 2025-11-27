@@ -26,7 +26,6 @@ return {
     },
   },
   config = function()
-    local lspconfig = require("lspconfig")
     local mason_lspconfig = require("mason-lspconfig")
     local cmp_nvim_lsp = require("cmp_nvim_lsp")
     local keymap = vim.keymap -- for conciseness
@@ -96,13 +95,13 @@ return {
       vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
     end
 
-    require('lspconfig').ltex.setup {
-      on_attach = function()
-        -- ...
-      end,
-      filetypes = { 'markdown', 'text', 'tex', 'gitcommit' },
-      flags = { debounce_text_changes = 300 },
-    }
+    -- require('lspconfig').ltex.setup {
+    --   on_attach = function()
+    --     -- ...
+    --   end,
+    --   filetypes = { 'markdown', 'text', 'tex', 'gitcommit' },
+    --   flags = { debounce_text_changes = 300 },
+    -- }
 
     mason_lspconfig.setup {
       ensure_installed = { "lua_ls", "clangd", "tinymist", "ltex" },
