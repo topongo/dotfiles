@@ -447,7 +447,7 @@
         :valign "center"
       (icon-button :icon "${icons.pwr.sd}" :onclick "shutdown now")
       (icon-button :icon "${icons.pwr.rb}" :onclick "reboot")
-      (icon-button :icon "${icons.pwr.sp}" :style {s-lock ? "color: gray" : ""} :onclick {!s-lock ? "suspend-inhibited" : "notify-send 'Suspend Inhibited' 'Cannot sleep while suspension is inhibited.'"})
+      (icon-button :icon "${icons.pwr.sp}" :style {s-lock ? "color: gray" : ""} :onclick {!s-lock ? "~/bin/suspend-inhibited" : "notify-send 'Suspend Inhibited' 'Cannot sleep while suspension is inhibited.'"})
       (icon-button :icon "${icons.lock[s-lock]}" :onclick "[ -f /tmp/suspend-inhibit ] && rm /tmp/suspend-inhibit || touch /tmp/suspend-inhibit")
     )
   )
