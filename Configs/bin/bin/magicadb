@@ -1,0 +1,58 @@
+#!/bin/sh
+
+connect() {
+  i="$1"
+  p="$2"
+  echo -n "try connecting to $i:${p}..."
+  adb connect $i:$p > /dev/null
+}
+
+check() {
+  i="$1"
+  p="$2"
+  # adb is still hanging on a random port
+  if adb devices | grep "$i:$p" | grep -q offline; then
+    echo " not an ADB port"
+    clean
+  # device is not connected/paired
+  elif ! adb devices | grep -q "$i:$p"; then
+    # try pairing
+    echo "error: not paired (probably at least...)"
+    echo -n "try pairing: please insert port: "
+    read port
+    echo -n "try pairing: please insert pin:  "
+    read -s pin
+    echo
+    echo "trying to pair to $i:$p via port $p..."
+    if echo $pin | adb pair "$i:$port" | grep -qi success; then
+      echo "successfully paired"
+      connect $i $p
+    else
+      echo "error: pair failure"
+      exit 1
+    fi
+  else
+    echo " success!"
+    exit 0
+  fi
+}
+
+for i in voyager.local voyager.wg; do
+  if ping -c 1 -W 1 "$i" 2>&1 > /dev/null; then
+    echo $i is available, scanning ports...
+    for p in $(nmap -p 10000- $i -T4 -oX - | \
+        grep 'protocol="tcp"' | \
+        grep 'state="open"' | \
+        sed -E 's/.*portid="([0-9]+)".*/\1/'); do
+      clean() {
+        echo -n "disconnecting from $i:${p}..."
+        adb disconnect $i:$p > /dev/null
+        echo " ok"
+      }
+      trap clean SIGQUIT
+
+      connect $i $p
+      check $i $p
+    done
+  fi
+done
