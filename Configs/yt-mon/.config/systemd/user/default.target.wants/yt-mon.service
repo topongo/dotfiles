@@ -1,0 +1,9 @@
+[Unit]
+
+[Service]
+WorkingDirectory=%h/documents/python/yt-mon/
+ExecStartPre=/bin/bash -c '/bin/python -m venv .venv && .venv/bin/pip install -r requirements.txt'
+ExecStart=%h/documents/python/yt-mon/.venv/bin/fastapi run main.py --port 6123 --host 127.0.0.1
+
+[Install]
+WantedBy=default.target
