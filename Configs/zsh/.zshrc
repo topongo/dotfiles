@@ -101,10 +101,7 @@ alias shitdown="sudo shutdown now"
 
 export GOPATH=$HOME/gopath
 export EDITOR=nvim
-export NTFY_WARNING=""
-export NTFY_ERROR=""
-export NTFY_CRITICAL=""
-export NTFY_INFO=""
+source ~/.ntfy_channels
 export COLORTERM=truecolor
 export LC_LANG="en_US.UTF8"
 export LC_ALL="en_US.UTF-8"
