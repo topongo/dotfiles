@@ -413,6 +413,21 @@
   )
 )
 
+(deflisten yt-mon_usage
+    :initial "1"
+  "buzz send listen yt-mon.usage"
+)
+
+(defwidget yt-mon []
+  (box
+      :class "box widget-nobox yt-mon"
+    (icon-button :icon "${icons.yt}")
+    (label
+      :text "${round(yt-mon_usage * 100, 0)}%"
+    )
+  )
+)
+
 (defwidget icon-button [icon ?onclick ?style]
   (eventbox
       :onclick {onclick}

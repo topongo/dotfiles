@@ -20,6 +20,7 @@
       (workspaces)
       (updates)
       (ping)
+      (yt-mon)
     )
     (box
         :class "center"
