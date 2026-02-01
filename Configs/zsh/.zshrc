@@ -102,6 +102,7 @@ alias bdc=bodoConnect
 alias sugo=sudo
 alias this-is-mine-now="sudo chown -R $USER:$USER"
 alias shitdown="sudo shutdown now"
+alias woman=man
 
 export GOPATH=$HOME/gopath
 export EDITOR=nvim
