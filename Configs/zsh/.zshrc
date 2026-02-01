@@ -61,7 +61,11 @@ function mkdircd(){
 }
 
 function kc() {
-  eval "$(keychain --eval --ignore-missing ~/.ssh/id_ed25519)"
+  if [ -f $SSH_ID_FILE ]; then
+    ssh-add -t 3600 $SSH_ID_FILE
+  else
+    echo warning: $SSH_ID_FILE default ssh identity file missing
+  fi
 }
 
 export PATH=$GOPATH:$GOPATH/bin:$PATH:$HOME/bin:$HOME/.local/bin:$HOME/.cargo/bin:/opt/riscv/bin
@@ -107,14 +111,30 @@ export LC_LANG="en_US.UTF8"
 export LC_ALL="en_US.UTF-8"
 
 
-if pidof -q ssh-agent; then
-  eval "$(keychain --eval --quiet)"
+export SSH_ID_FILE=~/.ssh/id_ed25519
+if is_android; then
+  export SSH_ASKPASS='termux-ssh-askpass'
+  export SSH_ASKPASS_REQUIRE='force'
+  export SSH_AUTH_SOCK=~/.ssh/agent/ssh-agent.socket
 else
-  echo -n "Start keychain service? (y/N) "
-  if read -q; then
-    echo
-    kc
+  export SSH_AUTH_SOCK=/run/user/1000/ssh-agent.socket
+fi
+
+if is_android && ! pidof -q ssh-agent; then
+  ssh-agent -a $SSH_AUTH_SOCK
+fi
+
+if pidof -q ssh-agent; then
+  # check if default identity is in agent
+  if ! ssh-add -L | grep -q $(cut -d' ' -f 2 $SSH_ID_FILE.pub); then
+    echo -n "Start keychain service? (y/N) "
+    if read -q; then
+      echo
+      kc
+    fi
   fi
+else
+  echo warning: ssh-agent is not running or could not be started
 fi
 
 function cmdlineof(){
