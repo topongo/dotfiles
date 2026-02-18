@@ -240,3 +240,14 @@ else
 fi
 
 (setopt NO_NOTIFY NO_MONITOR; zsh ~/bin/check-updates &)
+
+# start zj if not in ssh and not in another zj
+if [ -z "$SSH_CLIENT" ] && [ -z "$ZELLIJ" ]; then
+  if zellij list-sessions --short | grep -q main; then
+    # echo would attach
+    exec zellij attach main
+  else
+    # echo would create new session
+    exec zellij --session main
+  fi
+fi
