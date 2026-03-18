@@ -103,6 +103,7 @@ alias sugo=sudo
 alias this-is-mine-now="sudo chown -R $USER:$USER"
 alias shitdown="sudo shutdown now"
 alias woman=man
+alias ding="ffplay -f lavfi sine=frequency=1000:duration=0.2 -af \"afade=out:0:d=0.1\" -t 0.2 -autoexit -nodisp"
 
 export GOPATH=$HOME/gopath
 export EDITOR=nvim
