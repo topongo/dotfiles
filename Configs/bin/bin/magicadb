@@ -37,7 +37,10 @@ check() {
   fi
 }
 
-for i in voyager.local voyager.wg; do
+auto="voyager.local voyager.wg"
+[ -n "$1" ] && targets="$1" || targets=$auto
+
+for i in $targets; do
   if ping -c 1 -W 1 "$i" 2>&1 > /dev/null; then
     echo $i is available, scanning ports...
     for p in $(nmap -p 10000- $i -T4 -oX - | \
