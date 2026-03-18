@@ -13,12 +13,13 @@
 # read from hyprland socket2
 socat $XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock - | \
   while read p; do
-    # filter `windowtitlev2` events, from a window that has not "Mozilla Firefox" as his name.
-    if ! echo $p | grep -q 'windowtitlev2'; then
-      continue
-    elif echo $p | grep -q ',Mozilla Firefox'; then
-      continue
-    fi
+    # keep `windowtitlev2` events
+    ! echo $p | grep -q '^windowtitlev2>>' && continue
+
+    # filter out windows called ',Mozilla Firefox':
+    #   this title is the initial one, and it's always the same
+    echo $p | grep -q ',Mozilla Firefox$' && continue
+    echo $p
     # then for each window that HAS NOT exactly 'Extension: (Bitwarden Password Manager)' as the
     # title we set disable floating:
     #   if we match only 'Bitwarden' every window that contains bitwarden will be matched
