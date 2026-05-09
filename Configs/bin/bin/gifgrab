@@ -9,10 +9,11 @@ fps=$5
 function help {
   echo "Usage: screen-grif OUTPUT [DURATION] [MODE] [DELAY] [FPS]"
   echo "  OUTPUT     File output, extension can be omitted."
-  echo "  DURATION   Duration of the captured clip"
-  echo "  MODE       Either \"crop\", \"all\" or \"win\", crop will ask for grab"
-  echo "             dimensions, all will record entire screen, win will record the focused window when"
-  echo "             delay ends"
+  echo "  DURATION   Duration of the captured clip (Supports '1m' or '1h' on wayland)"
+  echo "  MODE       X11:     Either \"crop\", \"all\" or \"win\", crop will ask for grab"
+  echo "                      dimensions, all will record entire screen, win will record"
+  echo "                      the focused window when the delay ends"
+  echo "             Wayland: Either \"all\", \"region\" or \"portal\""
   echo "  DELAY      Delay to wait before grabbing."
   echo "  FPS        Frames per second, defaults to 10."
   echo
@@ -25,6 +26,8 @@ function help {
 [ -z $mode ] && mode="crop"
 [ -z $delay ] && delay=5
 [ -z $fps ] && fps=10
+
+[[ $output == *.gif ]] || output=$output.gif
 
 if [ -e $output ]; then
   echo -n "File $output exists, overwrite it? (y/N) "
@@ -40,33 +43,54 @@ for i in {$delay..0}; do
   sleep 1
 done
 
-case $mode in
-  all)
-    CROP_STRING=""
-    ;;
-  crop)
-    echo "Select screen rectangle"
-    sleep .5
-    import /tmp/screen_grab.png
-    CROP_STRING="crop=$(identify /tmp/screen_grab.png | sed -E 's/.* PNG ([0-9]+)x([0-9]+) .*\+([0-9]+)\+([0-9]+).*/\1:\2:\3:\4/')"
-    ;;
-  win)
-    eval $(xdotool getwindowfocus getwindowgeometry --shell)
-    CROP_STRING="crop=$WIDTH:$HEIGHT:$X:$Y"
-    ;;
-  *)
-    echo "Invalid mode: $mode"
-    help
-    ;;
-esac
-
-echo "Starting grab!"
-
 REC=$(uuidgen).mp4
 
-ffmpeg -t $duration -f x11grab -i :0.0 -y -framerate $fps -filter:v "$CROP_STRING" .$REC
+if [ -z "$WAYLAND_DISPLAY" ]; then
+  case $mode in
+    all)
+      CROP_STRING=""
+      ;;
+    crop)
+      echo "Select screen rectangle"
+      sleep .5
+      import /tmp/screen_grab.png
+      CROP_STRING="crop=$(identify /tmp/screen_grab.png | sed -E 's/.* PNG ([0-9]+)x([0-9]+) .*\+([0-9]+)\+([0-9]+).*/\1:\2:\3:\4/')"
+      ;;
+    win)
+      eval $(xdotool getwindowfocus getwindowgeometry --shell)
+      CROP_STRING="crop=$WIDTH:$HEIGHT:$X:$Y"
+      ;;
+    *)
+      echo "Invalid mode: $mode"
+      help
+      ;;
+  esac
 
-[[ $output == *.gif ]] || output=$output.gif
+  echo "Starting grab!"
+
+  ffmpeg -t $duration -f x11grab -i :0.0 -y -framerate $fps -filter:v "$CROP_STRING" .$REC
+else
+  case $mode in
+    all)
+      gpu-screen-recorder -w screen -k h264 -o .$REC &
+      ;;
+    region)
+      REGION="$(slurp -f "%wx%h+%x+%y")"
+      gpu-screen-recorder -w region -region "$REGION" -k h264 -o .$REC &
+      ;;
+    portal)
+      gpu-screen-recorder -w portal -k h264 -o .$REC &
+      ;;
+    *)
+      echo "invalid mode: $mode"
+      help
+      ;;
+  esac
+  GSR="$!"
+
+  sleep $duration
+  kill -SIGINT "$GSR"
+fi
 
 ffmpeg -i .$REC -framerate $fps -y -vf "fps=$fps,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" $output
 rm .$REC
