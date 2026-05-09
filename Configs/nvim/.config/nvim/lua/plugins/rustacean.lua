@@ -1,9 +1,9 @@
 return {
   'mrcjkb/rustaceanvim',
-  version = '^6', -- Recommended
+  version = '^9', -- Recommended
   lazy = false, -- This plugin is already lazy
   opts = {
-    ra_multiplex = { enable = true },
+    lspmux = { enable = true },
     server = {
       -- cmd = function()
       --   return vim.lsp.rpc.connect("/run/user/1000/ra-mux.sock")
