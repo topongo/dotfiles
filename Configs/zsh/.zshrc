@@ -104,6 +104,8 @@ alias this-is-mine-now="sudo chown -R $USER:$USER"
 alias shitdown="sudo shutdown now"
 alias woman=man
 alias ding="ffplay -f lavfi sine=frequency=1000:duration=0.2 -af \"afade=out:0:d=0.1\" -t 0.2 -autoexit -nodisp >/dev/null 2>/dev/null"
+alias aurelctl="docker compose -f ~/documents/dockers/aurel/docker-compose.yml"
+alias aurel="aurelctl exec -e MAKEFLAGS=-j8 -it aurel paru"
 
 export GOPATH=$HOME/gopath
 export EDITOR=nvim
