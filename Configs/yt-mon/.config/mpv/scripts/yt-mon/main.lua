@@ -76,8 +76,9 @@ end
 
 local function send_atom()
   local pause = mp.get_property("pause")
+  local brightness = tonumber(mp.get_property("brightness"))
   local video_track, _ = mp.get_property("current-tracks/video")
-  if pause == "no" and video_track ~= nil then
+  if pause == "no" and video_track ~= nil and brightness >= -100 then
     -- send atom
     os.execute(("sh -c '%s'"):format(scripts.atom))
     -- local f, error, code = io.open(files.atom.out, "r")
