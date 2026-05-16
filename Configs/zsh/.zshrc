@@ -72,6 +72,15 @@ function kc() {
   fi
 }
 
+function cmdlineof(){
+  procs=$(pidof $1)
+  if [[ ! -z $procs ]]; then
+    echo $procs | xargs ps -o "pid=" -o "command="
+  else
+    echo No such process 1>&2
+  fi
+}
+
 export PATH=$GOPATH:$GOPATH/bin:$PATH:$HOME/bin:$HOME/.local/bin:$HOME/.cargo/bin:/opt/riscv/bin
 
 if [ -d /usr/share/oh-my-zsh ]; then
@@ -118,60 +127,6 @@ export COLORTERM=truecolor
 export LC_LANG="en_US.UTF8"
 export LC_ALL="en_US.UTF-8"
 
-
-export SSH_ID_FILE=~/.ssh/id_ed25519
-if is_android; then
-  export SSH_ASKPASS="$PREFIX/bin/termux-ssh-askpass"
-  export SSH_ASKPASS_REQUIRE='force'
-  export SSH_AUTH_SOCK=~/.ssh/agent/ssh-agent.socket
-  export SSH_AGENT_PID_FILE=~/.ssh/agent/pid
-  if [ -f "$SSH_AGENT_PID_FILE" ]; then
-    export SSH_AGENT_PID="$(cat $SSH_AGENT_PID_FILE)"
-  fi
-else
-  export SSH_AUTH_SOCK=/run/user/1000/ssh-agent.socket
-fi
-
-SSH_AGENT_RUNNING=false
-if is_android; then
-  pidof -q ssh-agent && SSH_AGENT_RUNNING=true
-  [ -n "$SSH_AGENT_PID" ] && kill -0 "$SSH_AGENT_PID" 2>/dev/null && SSH_AGENT_RUNNING=true
-else
-  pidof -q ssh-agent && SSH_AGENT_RUNNING=true
-  usc is-active -q ssh-agent.service && SSH_AGENT_RUNNING=true
-fi
-
-if ! $SSH_AGENT_RUNNING; then
-  if is_android; then
-    [ -e $SSH_AUTH_SOCK ] && rm $SSH_AUTH_SOCK
-    eval "$(ssh-agent -a $SSH_AUTH_SOCK)" && SSH_AGENT_RUNNING=true
-    echo "$SSH_AGENT_PID" > $SSH_AGENT_PID_FILE
-  elif is_systemd; then
-    usca ssh-agent.service && SSH_AGENT_RUNNING=true
-  fi
-fi
-
-if $SSH_AGENT_RUNNING; then
-  # # check if default identity is in agent
-  # if ! ssh-add -L | grep -q $(cut -d' ' -f 2 $SSH_ID_FILE.pub); then
-  #   echo -n "Start keychain service? (y/N) "
-  #   if read -q; then
-  #     echo
-  #     kc
-  #   fi
-  # fi
-else
-  echo warning: ssh-agent is not running or could not be started
-fi
-
-function cmdlineof(){
-  procs=$(pidof $1)
-  if [[ ! -z $procs ]]; then
-    echo $procs | xargs ps -o "pid=" -o "command="
-  else
-    echo No such process 1>&2
-  fi
-}
 
 if type systemctl > /dev/null; then
   # systemctl aliases
@@ -257,6 +212,55 @@ if uname -a | grep Android > /dev/null; then
     ln -s $PREFIX/tmp/$USER ~/tmp
   fi
 fi
+
+###### END OF DECLARATIONS ######
+
+export SSH_ID_FILE=~/.ssh/id_ed25519
+if is_android; then
+  export SSH_ASKPASS="$PREFIX/bin/termux-ssh-askpass"
+  export SSH_ASKPASS_REQUIRE='force'
+  export SSH_AUTH_SOCK=~/.ssh/agent/ssh-agent.socket
+  export SSH_AGENT_PID_FILE=~/.ssh/agent/pid
+  if [ -f "$SSH_AGENT_PID_FILE" ]; then
+    export SSH_AGENT_PID="$(cat $SSH_AGENT_PID_FILE)"
+  fi
+else
+  export SSH_AUTH_SOCK=/run/user/1000/ssh-agent.socket
+fi
+
+SSH_AGENT_RUNNING=false
+if is_android; then
+  pidof -q ssh-agent && SSH_AGENT_RUNNING=true
+  [ -n "$SSH_AGENT_PID" ] && kill -0 "$SSH_AGENT_PID" 2>/dev/null && SSH_AGENT_RUNNING=true
+else
+  pidof -q ssh-agent && SSH_AGENT_RUNNING=true
+  usc is-active -q ssh-agent.service && SSH_AGENT_RUNNING=true
+fi
+
+if ! $SSH_AGENT_RUNNING; then
+  if is_android; then
+    [ -e $SSH_AUTH_SOCK ] && rm $SSH_AUTH_SOCK
+    eval "$(ssh-agent -a $SSH_AUTH_SOCK)" && SSH_AGENT_RUNNING=true
+    echo "$SSH_AGENT_PID" > $SSH_AGENT_PID_FILE
+  elif is_systemd; then
+    usca ssh-agent.service && SSH_AGENT_RUNNING=true
+  fi
+fi
+
+if $SSH_AGENT_RUNNING; then
+  # # check if default identity is in agent
+  # if ! ssh-add -L | grep -q $(cut -d' ' -f 2 $SSH_ID_FILE.pub); then
+  #   echo -n "Start keychain service? (y/N) "
+  #   if read -q; then
+  #     echo
+  #     kc
+  #   fi
+  # fi
+else
+  echo warning: ssh-agent is not running or could not be started
+fi
+
+
 
 if [ -f /usr/share/zsh-antidote/antidote.zsh ]; then
   source /usr/share/zsh-antidote/antidote.zsh
