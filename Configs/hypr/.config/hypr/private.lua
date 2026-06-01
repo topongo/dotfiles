@@ -1,0 +1,2 @@
+hl.env("NTFY_HOSTS_CHANNEL", "hPyv4KOuLeoNJIes")
+hl.env("NTFY_MPV_CHANNEL", "TXs43ES1LiUAzSPr")
