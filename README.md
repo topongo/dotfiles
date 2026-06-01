@@ -1,3 +1,8 @@
+# Archive Notive
+> [!WARNING]
+> This repository has been archived in favor or https://git.prabo.org/topongo/dotfiles
+
+
 # topongo's dotfiles
 [`tuckr`](https://github.com/RaphGL/tuckr)-managed dotfiles collection.
 
